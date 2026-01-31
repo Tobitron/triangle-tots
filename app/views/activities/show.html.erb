@@ -1,0 +1,104 @@
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <%= link_to "← Back to all activities", activities_path, class: "text-blue-600 hover:text-blue-800 mb-6 inline-block" %>
+
+  <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="p-8">
+      <div class="flex items-start justify-between mb-4">
+        <h1 class="text-3xl font-bold text-gray-900 flex-1"><%= @activity.name %></h1>
+        <% if @activity.cost_level == 0 %>
+          <span class="ml-4 px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">FREE</span>
+        <% else %>
+          <span class="ml-4 px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full"><%= "$" * @activity.cost_level %></span>
+        <% end %>
+      </div>
+
+      <div class="flex gap-2 mb-6">
+        <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm font-medium rounded-full capitalize">
+          <%= @activity.activity_type.tr('_', ' ') %>
+        </span>
+        <% if @activity.indoor? %>
+          <span class="px-3 py-1 bg-purple-100 text-purple-700 text-sm font-medium rounded-full">Indoor</span>
+        <% else %>
+          <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-sm font-medium rounded-full">Outdoor</span>
+        <% end %>
+      </div>
+
+      <div class="prose max-w-none mb-8">
+        <p class="text-gray-700 text-lg"><%= @activity.description %></p>
+      </div>
+
+      <div class="border-t border-gray-200 pt-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Details</h2>
+
+        <dl class="space-y-4">
+          <% if @activity.address.present? %>
+            <div>
+              <dt class="text-sm font-medium text-gray-500 mb-1">Address</dt>
+              <dd class="text-base text-gray-900"><%= @activity.address %></dd>
+              <% if @activity.latitude.present? && @activity.longitude.present? %>
+                <dd class="mt-1">
+                  <%= link_to "Open in Google Maps", "https://www.google.com/maps/search/?api=1&query=#{@activity.latitude},#{@activity.longitude}", target: "_blank", class: "text-blue-600 hover:text-blue-800 text-sm" %>
+                </dd>
+              <% end %>
+            </div>
+          <% end %>
+
+          <% unless @activity.is_event? %>
+            <% if @activity.hours.present? %>
+              <div>
+                <dt class="text-sm font-medium text-gray-500 mb-2">Hours</dt>
+                <dd class="text-base text-gray-900">
+                  <div class="grid grid-cols-2 gap-2">
+                    <% @activity.hours.each do |day, hours| %>
+                      <div class="flex justify-between">
+                        <span class="capitalize font-medium"><%= day %>:</span>
+                        <span class="<%= hours == 'closed' ? 'text-red-600' : '' %>"><%= hours %></span>
+                      </div>
+                    <% end %>
+                  </div>
+                </dd>
+              </div>
+            <% end %>
+          <% end %>
+
+          <% if @activity.is_event? %>
+            <div>
+              <dt class="text-sm font-medium text-gray-500 mb-1">Event Time</dt>
+              <dd class="text-base text-gray-900">
+                <%= @activity.start_date.strftime("%B %d, %Y at %I:%M %p") %>
+                <% if @activity.end_date.present? %>
+                  - <%= @activity.end_date.strftime("%I:%M %p") %>
+                <% end %>
+              </dd>
+            </div>
+          <% end %>
+
+          <% if @activity.phone.present? %>
+            <div>
+              <dt class="text-sm font-medium text-gray-500 mb-1">Phone</dt>
+              <dd class="text-base text-gray-900"><%= @activity.phone %></dd>
+            </div>
+          <% end %>
+
+          <% if @activity.website.present? %>
+            <div>
+              <dt class="text-sm font-medium text-gray-500 mb-1">Website</dt>
+              <dd class="text-base">
+                <%= link_to @activity.website, @activity.website, target: "_blank", class: "text-blue-600 hover:text-blue-800" %>
+              </dd>
+            </div>
+          <% end %>
+
+          <% if @activity.registration_url.present? %>
+            <div>
+              <dt class="text-sm font-medium text-gray-500 mb-1">Registration</dt>
+              <dd class="text-base">
+                <%= link_to "Register for this event", @activity.registration_url, target: "_blank", class: "text-blue-600 hover:text-blue-800" %>
+              </dd>
+            </div>
+          <% end %>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
