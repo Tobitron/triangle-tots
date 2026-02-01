@@ -1,6 +1,8 @@
 class Activity < ApplicationRecord
-  # Virtual attribute to store calculated distance
-  attr_accessor :distance
+  # Virtual attributes
+  attr_accessor :distance      # Calculated distance from home (Milestone 2)
+  attr_accessor :status        # Current status (:open, :closing_soon, :opens_soon)
+  attr_accessor :status_time   # Time string for status display (e.g., "6:00 PM")
 
   # Enum for activity types
   enum :activity_type, {
@@ -40,6 +42,73 @@ class Activity < ApplicationRecord
       [latitude, longitude],
       units: :mi
     )
+  end
+
+  # Get current day's hours string
+  def hours_today
+    day_name = Time.current.strftime("%A").downcase
+    hours[day_name]
+  end
+
+  # Is activity open at a given time?
+  def open_at?(time = Time.current)
+    HoursParser.open_at?(hours_today, time)
+  end
+
+  # Does activity open within N hours from now?
+  # Returns: opening time string or nil
+  def opens_within?(within_hours)
+    HoursParser.opens_within?(hours_today, Time.current, within_hours)
+  end
+
+  # Does activity close within N hours from now?
+  # Returns: closing time string or nil
+  def closes_within?(within_hours)
+    HoursParser.closes_within?(hours_today, Time.current, within_hours)
+  end
+
+  # Calculate current status for display
+  # Returns: [status_symbol, time_string]
+  # Status can be: :open, :closing_soon, :opens_soon, or nil
+  def calculate_status
+    current_time = Time.current
+
+    # Check if currently open
+    if open_at?(current_time)
+      # Check if closing soon (within 1 hour)
+      closing_time = closes_within?(1)
+      if closing_time
+        # For dawn-dusk, show "dusk" instead of time
+        if hours_today&.downcase&.include?("dusk")
+          return [:closing_soon, "dusk"]
+        else
+          return [:closing_soon, closing_time]
+        end
+      else
+        # Show regular closing time
+        # For dawn-dusk hours, show "dusk" instead of specific time
+        if hours_today&.downcase&.include?("dawn") && hours_today&.downcase&.include?("dusk")
+          return [:open, "dusk"]
+        else
+          closing_time = HoursParser.get_closing_time(hours_today)
+          time_str = closing_time ? HoursParser.send(:format_time_12hr, closing_time) : nil
+          return [:open, time_str]
+        end
+      end
+    else
+      # Check if opens soon (within 2 hours)
+      opening_time = opens_within?(2)
+      if opening_time
+        # For dawn-dusk, show "dawn" instead of time
+        if hours_today&.downcase&.include?("dawn")
+          return [:opens_soon, "dawn"]
+        else
+          return [:opens_soon, opening_time]
+        end
+      end
+    end
+
+    nil
   end
 
   private

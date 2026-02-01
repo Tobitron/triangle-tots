@@ -1,18 +1,9 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <% unless @home_location %>
-    <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-      <p class="text-sm text-blue-800">
-        <a href="#" onclick="LocationManager.requestGeolocation(); return false;" class="font-medium underline">Set your location</a> to see distances to activities
-      </p>
-    </div>
-  <% end %>
-
   <div class="mb-8">
     <div class="flex items-start justify-between">
       <div>
         <h1 class="text-4xl font-bold text-gray-900 mb-2">Triangle Tots</h1>
         <p class="text-lg text-gray-600">Activities for 3-year-olds in the Triangle area</p>
-        <p class="text-sm text-gray-500 mt-1"><%= @activities.count %> activities available</p>
       </div>
       <% if @home_location %>
         <a href="#" onclick="LocationManager.clearLocation(); LocationManager.requestGeolocation(); return false;" class="text-sm text-blue-600 hover:text-blue-800 underline whitespace-nowrap mt-2">
@@ -20,43 +11,85 @@
         </a>
       <% end %>
     </div>
+
+    <%# Weather indicator %>
+    <% if @current_weather %>
+      <div class="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+        <p class="text-sm text-gray-700">
+          <%= weather_summary(@current_weather, @weather_strategy) %>
+        </p>
+      </div>
+    <% end %>
+
+    <%# Tabs for Now and All views %>
+    <div class="mt-6 border-b border-gray-200">
+      <nav class="-mb-px flex space-x-8">
+        <%= link_to activities_path(view: "now", home_lat: @home_location[:latitude], home_lng: @home_location[:longitude]),
+                    class: "#{@view_mode == 'now' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" do %>
+          Now
+        <% end %>
+        <%= link_to activities_path(view: "all", home_lat: @home_location[:latitude], home_lng: @home_location[:longitude]),
+                    class: "#{@view_mode == 'all' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" do %>
+          All Activities
+        <% end %>
+      </nav>
+    </div>
+
+    <p class="text-sm text-gray-500 mt-4"><%= @activities.count %> <%= @view_mode == "now" ? "available now" : "activities" %></p>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <% @activities.each do |activity| %>
-      <%= link_to activity_path(activity), class: "block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden" do %>
-        <div class="p-6">
-          <div class="flex items-start justify-between mb-3">
-            <div class="flex items-center gap-3 flex-1">
-              <div class="flex-shrink-0">
-                <%= activity_icon(activity.activity_type, size: 64) %>
+  <% if @activities.empty? %>
+    <%# Empty state %>
+    <div class="text-center py-12">
+      <p class="text-gray-500 text-lg">No activities <%= @view_mode == "now" ? "available right now" : "found" %></p>
+      <% if @view_mode == "now" %>
+        <p class="text-gray-400 text-sm mt-2">Check back later or switch to "All Activities" to see the full list</p>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <% @activities.each do |activity| %>
+        <%= link_to activity_path(activity), class: "block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden" do %>
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex items-center gap-3 flex-1">
+                <div class="flex-shrink-0">
+                  <%= activity_icon(activity.activity_type, size: 64) %>
+                </div>
+                <h2 class="text-xl font-semibold text-gray-900 flex-1"><%= activity.name %></h2>
               </div>
-              <h2 class="text-xl font-semibold text-gray-900 flex-1"><%= activity.name %></h2>
+              <% if activity.cost_level == 0 %>
+                <span class="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded flex-shrink-0">FREE</span>
+              <% else %>
+                <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded flex-shrink-0"><%= "$" * activity.cost_level %></span>
+              <% end %>
             </div>
-            <% if activity.cost_level == 0 %>
-              <span class="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded flex-shrink-0">FREE</span>
-            <% else %>
-              <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded flex-shrink-0"><%= "$" * activity.cost_level %></span>
+
+            <p class="text-gray-600 text-sm line-clamp-2 mb-4"><%= activity.description %></p>
+
+            <%# Status badge for "Now" view %>
+            <% if @view_mode == "now" && activity.status %>
+              <div class="mb-3">
+                <%= format_status_badge(activity) %>
+              </div>
+            <% end %>
+
+            <div class="text-sm text-gray-500">
+              <svg class="inline-block w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <%= activity.address&.split(',')&.first || 'Chapel Hill/Durham' %>
+            </div>
+
+            <% if @home_location %>
+              <div class="text-sm text-gray-500 mt-2">
+                <%= format_distance(activity.distance) %>
+              </div>
             <% end %>
           </div>
-
-          <p class="text-gray-600 text-sm line-clamp-2 mb-4"><%= activity.description %></p>
-
-          <div class="text-sm text-gray-500">
-            <svg class="inline-block w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-            </svg>
-            <%= activity.address&.split(',')&.first || 'Chapel Hill/Durham' %>
-          </div>
-
-          <% if @home_location %>
-            <div class="text-sm text-gray-500 mt-2">
-              <%= format_distance(activity.distance) %>
-            </div>
-          <% end %>
-        </div>
+        <% end %>
       <% end %>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
 </div>
