@@ -51,6 +51,7 @@
       <% @activities.each do |activity| %>
         <%= link_to activity_path(activity), class: "block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden" do %>
           <div class="p-6">
+            <%# Top row: Title with icon on left, badges on right %>
             <div class="flex items-start justify-between mb-3">
               <div class="flex items-center gap-3 flex-1">
                 <div class="flex-shrink-0">
@@ -58,35 +59,67 @@
                 </div>
                 <h2 class="text-xl font-semibold text-gray-900 flex-1"><%= activity.name %></h2>
               </div>
-              <% if activity.cost_level == 0 %>
-                <span class="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded flex-shrink-0">FREE</span>
-              <% else %>
-                <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded flex-shrink-0"><%= "$" * activity.cost_level %></span>
-              <% end %>
+
+              <%# Badges: Status (if present) + Cost %>
+              <div class="flex gap-2 flex-shrink-0 ml-2">
+                <%# Status badge for "Now" view %>
+                <% if @view_mode == "now" && activity.status %>
+                  <%= format_status_badge(activity) %>
+                <% end %>
+
+                <%# Cost badge %>
+                <% if activity.cost_level == 0 %>
+                  <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">FREE</span>
+                <% else %>
+                  <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded"><%= "$" * activity.cost_level %></span>
+                <% end %>
+              </div>
             </div>
 
             <p class="text-gray-600 text-sm line-clamp-2 mb-4"><%= activity.description %></p>
 
-            <%# Status badge for "Now" view %>
-            <% if @view_mode == "now" && activity.status %>
-              <div class="mb-3">
-                <%= format_status_badge(activity) %>
-              </div>
-            <% end %>
-
-            <div class="text-sm text-gray-500">
-              <svg class="inline-block w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <%# Address row with distance directly to the right %>
+            <div class="flex items-center gap-2 text-sm text-gray-500 mb-4">
+              <svg class="inline-block w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
               </svg>
-              <%= activity.address&.split(',')&.first || 'Chapel Hill/Durham' %>
+              <span><%= activity.address&.split(',')&.first || 'Chapel Hill/Durham' %></span>
+              <% if @home_location %>
+                <span class="text-gray-400">•</span>
+                <span><%= format_distance(activity.distance) %></span>
+              <% end %>
             </div>
 
-            <% if @home_location %>
-              <div class="text-sm text-gray-500 mt-2">
-                <%= format_distance(activity.distance) %>
-              </div>
-            <% end %>
+            <%# Rating buttons in bottom right %>
+            <%
+              interaction = @interactions[activity.id.to_s]
+              has_thumbs_up = interaction && interaction['rating'] == 1
+              has_thumbs_down = interaction && interaction['rating'] == -1
+            %>
+            <div class="flex justify-end gap-2 mt-2">
+              <%# Thumbs Up Button %>
+              <button
+                onclick="event.stopPropagation(); event.preventDefault(); ActivityInteractions.rate(<%= activity.id %>, 1); return false;"
+                class="px-2 py-1 rounded border <%= has_thumbs_up ? 'bg-green-100 border-green-500' : 'border-gray-300 hover:bg-green-50 hover:border-green-400' %> transition-colors"
+                data-activity-id="<%= activity.id %>"
+                data-interaction-type="thumbs-up"
+                title="I like this activity"
+              >
+                <span class="text-lg">👍</span>
+              </button>
+
+              <%# Thumbs Down Button %>
+              <button
+                onclick="event.stopPropagation(); event.preventDefault(); ActivityInteractions.rate(<%= activity.id %>, -1); return false;"
+                class="px-2 py-1 rounded border <%= has_thumbs_down ? 'bg-red-100 border-red-500' : 'border-gray-300 hover:bg-red-50 hover:border-red-400' %> transition-colors"
+                data-activity-id="<%= activity.id %>"
+                data-interaction-type="thumbs-down"
+                title="Not interested in this activity"
+              >
+                <span class="text-lg">👎</span>
+              </button>
+            </div>
           </div>
         <% end %>
       <% end %>

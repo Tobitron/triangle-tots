@@ -17,6 +17,10 @@ class ActivitiesController < ApplicationController
     weather_strategy = WeatherService.analyze_rain_forecast(weather_data[:forecast])
     @weather_strategy = weather_strategy
 
+    # Get user interactions from localStorage (passed as JSON parameter)
+    interactions_json = params[:interactions]
+    @interactions = interactions_json ? JSON.parse(interactions_json) : {}
+
     # Determine view mode: "now" or "all" (default to "now")
     @view_mode = params[:view] || "now"
 
@@ -32,8 +36,19 @@ class ActivitiesController < ApplicationController
         activity.distance = activity.distance_from(home_lat, home_lng)
       end
 
-      # Sort by distance (with weather penalty if needed)
-      @activities = sort_with_weather_penalty(@activities, weather_strategy)
+      # Sort by distance with personalization if interactions present
+      if @interactions.present?
+        @activities = RecommendationScorer.sort_with_scores(
+          @activities,
+          @interactions,
+          home_lat,
+          home_lng,
+          weather_strategy
+        )
+      else
+        # Fallback to original sorting without personalization
+        @activities = sort_with_weather_penalty(@activities, weather_strategy)
+      end
     else
       # "All" view - existing Milestone 2 behavior
       @activities.each do |activity|

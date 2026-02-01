@@ -50,6 +50,8 @@ class ActivityFilter
 
   # Check if activity will open tomorrow (for evening edge case)
   def self.will_open_tomorrow?(activity)
+    return false if activity.hours.nil?
+
     # If it's evening and activity is closed, it might open tomorrow
     tomorrow = (Time.current + 1.day).beginning_of_day
     tomorrow_day_name = tomorrow.strftime("%A").downcase

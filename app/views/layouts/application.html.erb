@@ -119,6 +119,176 @@
 
       // Make LocationManager available globally for "Change Location" link
       window.LocationManager = LocationManager;
+
+      // ActivityInteractions: Manages user ratings and activity completions in localStorage
+      const ActivityInteractions = {
+        STORAGE_KEY: 'triangleTots_activityInteractions',
+
+        // Initialize storage structure
+        getStorage() {
+          const data = localStorage.getItem(this.STORAGE_KEY);
+          if (!data) {
+            return { version: "1.0", interactions: {} };
+          }
+          try {
+            return JSON.parse(data);
+          } catch (e) {
+            console.error('Failed to parse interactions:', e);
+            return { version: "1.0", interactions: {} };
+          }
+        },
+
+        saveStorage(data) {
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+        },
+
+        // Rate an activity (1 = thumbs up, -1 = thumbs down)
+        rate(activityId, rating, reloadPage = false) {
+          const storage = this.getStorage();
+
+          if (!storage.interactions[activityId]) {
+            storage.interactions[activityId] = {
+              rating: null,
+              completions: [],
+              lastCompleted: null,
+              updatedAt: null
+            };
+          }
+
+          storage.interactions[activityId].rating = rating;
+          storage.interactions[activityId].updatedAt = new Date().toISOString();
+
+          this.saveStorage(storage);
+
+          if (reloadPage) {
+            this.reloadWithInteractions();
+          } else {
+            this.updateButtonStates();
+          }
+        },
+
+        // Mark activity as done
+        markDone(activityId, reloadPage = false) {
+          const storage = this.getStorage();
+          const now = new Date().toISOString();
+
+          if (!storage.interactions[activityId]) {
+            storage.interactions[activityId] = {
+              rating: null,
+              completions: [],
+              lastCompleted: null,
+              updatedAt: null
+            };
+          }
+
+          storage.interactions[activityId].completions.push(now);
+          storage.interactions[activityId].lastCompleted = now;
+          storage.interactions[activityId].updatedAt = now;
+
+          this.saveStorage(storage);
+
+          if (reloadPage) {
+            // Redirect to Now feed
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('view', 'now');
+            window.location.href = '/activities?' + urlParams.toString();
+          } else {
+            this.reloadWithInteractions();
+          }
+        },
+
+        // Reload page with interactions parameter
+        reloadWithInteractions() {
+          const storage = this.getStorage();
+          const urlParams = new URLSearchParams(window.location.search);
+          urlParams.set('interactions', JSON.stringify(storage.interactions));
+          window.location.href = '/activities?' + urlParams.toString();
+        },
+
+        // Update button visual states without reload
+        updateButtonStates() {
+          const storage = this.getStorage();
+
+          document.querySelectorAll('[data-activity-id]').forEach(button => {
+            const activityId = button.dataset.activityId;
+            const interaction = storage.interactions[activityId];
+            const interactionType = button.dataset.interactionType;
+
+            if (interaction) {
+              // Update thumbs up/down states
+              if (interactionType === 'thumbs-up') {
+                if (interaction.rating === 1) {
+                  button.classList.add('bg-green-100', 'border-green-500');
+                  button.classList.remove('border-gray-300');
+                } else {
+                  button.classList.remove('bg-green-100', 'border-green-500');
+                  button.classList.add('border-gray-300');
+                }
+              }
+
+              if (interactionType === 'thumbs-down') {
+                if (interaction.rating === -1) {
+                  button.classList.add('bg-red-100', 'border-red-500');
+                  button.classList.remove('border-gray-300');
+                } else {
+                  button.classList.remove('bg-red-100', 'border-red-500');
+                  button.classList.add('border-gray-300');
+                }
+              }
+
+              if (interactionType === 'mark-done') {
+                if (interaction.lastCompleted) {
+                  button.classList.add('bg-blue-100', 'border-blue-500');
+                  button.classList.remove('border-gray-300');
+                } else {
+                  button.classList.remove('bg-blue-100', 'border-blue-500');
+                  button.classList.add('border-gray-300');
+                }
+              }
+            }
+          });
+        },
+
+        // Get interactions for a specific activity
+        getInteraction(activityId) {
+          const storage = this.getStorage();
+          return storage.interactions[activityId.toString()] || null;
+        },
+
+        // Get all interactions
+        getAllInteractions() {
+          return this.getStorage().interactions;
+        },
+
+        // Initialize button states on page load
+        init() {
+          // Add interactions to page load if they exist
+          const storage = this.getStorage();
+          if (Object.keys(storage.interactions).length > 0) {
+            // Add interactions to URL if not already present
+            const urlParams = new URLSearchParams(window.location.search);
+            if (!urlParams.has('interactions')) {
+              urlParams.set('interactions', JSON.stringify(storage.interactions));
+              // Update URL without reload using pushState
+              const newUrl = window.location.pathname + '?' + urlParams.toString();
+              window.history.replaceState({}, '', newUrl);
+            }
+          }
+
+          // Update button states
+          this.updateButtonStates();
+        }
+      };
+
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => ActivityInteractions.init());
+      } else {
+        ActivityInteractions.init();
+      }
+
+      // Make ActivityInteractions available globally
+      window.ActivityInteractions = ActivityInteractions;
     </script>
   </head>
 

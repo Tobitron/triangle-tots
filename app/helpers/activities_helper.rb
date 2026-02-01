@@ -1,5 +1,8 @@
 module ActivitiesHelper
   def activity_icon(activity_type, size: 64)
+    # Handle nil activity_type
+    return image_tag('icon-library.png', width: size, height: size, alt: "Activity icon", class: "activity-icon") if activity_type.nil?
+
     icon_mapping = {
       'library' => 'icon-library.png',
       'museum' => 'icon-library.png',

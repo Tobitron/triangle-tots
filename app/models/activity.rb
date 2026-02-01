@@ -46,6 +46,7 @@ class Activity < ApplicationRecord
 
   # Get current day's hours string
   def hours_today
+    return nil if hours.nil?
     day_name = Time.current.strftime("%A").downcase
     hours[day_name]
   end
