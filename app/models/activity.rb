@@ -1,4 +1,7 @@
 class Activity < ApplicationRecord
+  # Virtual attribute to store calculated distance
+  attr_accessor :distance
+
   # Enum for activity types
   enum :activity_type, {
     playground: 'playground',
@@ -25,6 +28,19 @@ class Activity < ApplicationRecord
 
   # Evergreen-specific validations
   validates :hours, presence: true, unless: :is_event?
+
+  # Calculate distance from a given home location
+  # Returns distance in miles, or nil if activity has no coordinates
+  def distance_from(home_lat, home_lng)
+    return nil if latitude.blank? || longitude.blank?
+    return nil if home_lat.blank? || home_lng.blank?
+
+    ::Geocoder::Calculations.distance_between(
+      [home_lat, home_lng],
+      [latitude, longitude],
+      units: :mi
+    )
+  end
 
   private
 

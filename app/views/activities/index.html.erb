@@ -1,8 +1,27 @@
+<%= render 'shared/location_modal' %>
+
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <% unless @home_location %>
+    <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+      <p class="text-sm text-blue-800">
+        <a href="#" onclick="LocationManager.showModal(); return false;" class="font-medium underline">Set your location</a> to see distances to activities
+      </p>
+    </div>
+  <% end %>
+
   <div class="mb-8">
-    <h1 class="text-4xl font-bold text-gray-900 mb-2">Triangle Tots</h1>
-    <p class="text-lg text-gray-600">Activities for 3-year-olds in the Triangle area</p>
-    <p class="text-sm text-gray-500 mt-1"><%= @activities.count %> activities available</p>
+    <div class="flex items-start justify-between">
+      <div>
+        <h1 class="text-4xl font-bold text-gray-900 mb-2">Triangle Tots</h1>
+        <p class="text-lg text-gray-600">Activities for 3-year-olds in the Triangle area</p>
+        <p class="text-sm text-gray-500 mt-1"><%= @activities.count %> activities available</p>
+      </div>
+      <% if @home_location %>
+        <a href="#" onclick="LocationManager.clearLocation(); LocationManager.showModal(); return false;" class="text-sm text-blue-600 hover:text-blue-800 underline whitespace-nowrap mt-2">
+          Change Location
+        </a>
+      <% end %>
+    </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -32,6 +51,12 @@
             </svg>
             <%= activity.address&.split(',')&.first || 'Chapel Hill/Durham' %>
           </div>
+
+          <% if @home_location %>
+            <div class="text-sm text-gray-500 mt-2">
+              <%= format_distance(activity.distance) %>
+            </div>
+          <% end %>
         </div>
       <% end %>
     <% end %>

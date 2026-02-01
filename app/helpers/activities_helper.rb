@@ -24,4 +24,10 @@ module ActivitiesHelper
               alt: "#{activity_type.tr('_', ' ').titleize} icon",
               class: "activity-icon")
   end
+
+  def format_distance(distance_in_miles)
+    return "Distance unknown" if distance_in_miles.nil?
+
+    "#{distance_in_miles.round(1)} mi away"
+  end
 end

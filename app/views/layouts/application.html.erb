@@ -21,6 +21,171 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+
+    <script>
+      // Location management functions
+      const LocationManager = {
+        STORAGE_KEY: 'triangleTots_homeLocation',
+
+        // Check if location exists in localStorage
+        hasLocation() {
+          return localStorage.getItem(this.STORAGE_KEY) !== null;
+        },
+
+        // Get location from localStorage
+        getLocation() {
+          const data = localStorage.getItem(this.STORAGE_KEY);
+          return data ? JSON.parse(data) : null;
+        },
+
+        // Save location to localStorage
+        saveLocation(latitude, longitude) {
+          const data = { latitude, longitude };
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+        },
+
+        // Clear location from localStorage
+        clearLocation() {
+          localStorage.removeItem(this.STORAGE_KEY);
+        },
+
+        // Show the location modal
+        showModal() {
+          const modal = document.getElementById('locationModal');
+          if (modal) {
+            modal.classList.remove('hidden');
+          }
+        },
+
+        // Hide the location modal
+        hideModal() {
+          const modal = document.getElementById('locationModal');
+          if (modal) {
+            modal.classList.add('hidden');
+          }
+        },
+
+        // Show error message in modal
+        showError(message) {
+          const errorDiv = document.getElementById('locationError');
+          if (errorDiv) {
+            errorDiv.querySelector('p').textContent = message;
+            errorDiv.classList.remove('hidden');
+          }
+        },
+
+        // Hide error message
+        hideError() {
+          const errorDiv = document.getElementById('locationError');
+          if (errorDiv) {
+            errorDiv.classList.add('hidden');
+          }
+        },
+
+        // Request geolocation from browser
+        requestGeolocation() {
+          if (!navigator.geolocation) {
+            this.showError('Geolocation is not supported by your browser.');
+            return;
+          }
+
+          this.hideError();
+          const btn = document.getElementById('useLocationBtn');
+          if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Getting your location...';
+          }
+
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              this.saveLocation(latitude, longitude);
+              this.reloadWithLocation();
+            },
+            (error) => {
+              if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Use My Location';
+              }
+
+              let errorMsg = 'Unable to get your location. ';
+              if (error.code === error.PERMISSION_DENIED) {
+                errorMsg += 'Please enable location access in your browser settings.';
+              } else if (error.code === error.POSITION_UNAVAILABLE) {
+                errorMsg += 'Location information is unavailable.';
+              } else if (error.code === error.TIMEOUT) {
+                errorMsg += 'The request to get your location timed out.';
+              } else {
+                errorMsg += 'An unknown error occurred.';
+              }
+              this.showError(errorMsg);
+            },
+            {
+              enableHighAccuracy: false,
+              timeout: 10000,
+              maximumAge: 300000 // 5 minutes
+            }
+          );
+        },
+
+        // Reload page with location parameters
+        reloadWithLocation() {
+          const location = this.getLocation();
+          if (location) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('home_lat', location.latitude);
+            url.searchParams.set('home_lng', location.longitude);
+            window.location.href = url.toString();
+          }
+        },
+
+        // Initialize on page load
+        init() {
+          // Check if we're on the activities index page
+          const modal = document.getElementById('locationModal');
+          if (!modal) return;
+
+          // Set up event listeners
+          const useLocationBtn = document.getElementById('useLocationBtn');
+          if (useLocationBtn) {
+            useLocationBtn.addEventListener('click', () => this.requestGeolocation());
+          }
+
+          const skipBtn = document.getElementById('skipLocationBtn');
+          if (skipBtn) {
+            skipBtn.addEventListener('click', () => this.hideModal());
+          }
+
+          // Make backdrop clickable to dismiss
+          const backdrop = document.getElementById('modalBackdrop');
+          if (backdrop) {
+            backdrop.addEventListener('click', () => this.hideModal());
+          }
+
+          // Check if location exists
+          if (!this.hasLocation()) {
+            // No location stored, show modal
+            this.showModal();
+          } else {
+            // Location exists, add it to current URL if not already present
+            const urlParams = new URLSearchParams(window.location.search);
+            if (!urlParams.has('home_lat') || !urlParams.has('home_lng')) {
+              this.reloadWithLocation();
+            }
+          }
+        }
+      };
+
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => LocationManager.init());
+      } else {
+        LocationManager.init();
+      }
+
+      // Make LocationManager available globally for "Change Location" link
+      window.LocationManager = LocationManager;
+    </script>
   </head>
 
   <body class="min-h-screen" style="background-color: #FAF9F4;">
