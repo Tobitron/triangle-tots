@@ -1,10 +1,8 @@
-<%= render 'shared/location_modal' %>
-
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <% unless @home_location %>
     <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
       <p class="text-sm text-blue-800">
-        <a href="#" onclick="LocationManager.showModal(); return false;" class="font-medium underline">Set your location</a> to see distances to activities
+        <a href="#" onclick="LocationManager.requestGeolocation(); return false;" class="font-medium underline">Set your location</a> to see distances to activities
       </p>
     </div>
   <% end %>
@@ -17,7 +15,7 @@
         <p class="text-sm text-gray-500 mt-1"><%= @activities.count %> activities available</p>
       </div>
       <% if @home_location %>
-        <a href="#" onclick="LocationManager.clearLocation(); LocationManager.showModal(); return false;" class="text-sm text-blue-600 hover:text-blue-800 underline whitespace-nowrap mt-2">
+        <a href="#" onclick="LocationManager.clearLocation(); LocationManager.requestGeolocation(); return false;" class="text-sm text-blue-600 hover:text-blue-800 underline whitespace-nowrap mt-2">
           Change Location
         </a>
       <% end %>
