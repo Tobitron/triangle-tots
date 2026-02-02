@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_31_212527) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_01_235102) do
   create_schema "extensions"
 
   # These are extensions that must be enabled in order to support this database
@@ -48,5 +48,39 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_31_212527) do
     t.index ["latitude", "longitude"], name: "index_activities_on_latitude_and_longitude"
     t.index ["start_date", "end_date"], name: "index_activities_on_start_date_and_end_date"
   end
+
+  create_table "public.sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "ip_address"
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "public.user_interactions", force: :cascade do |t|
+    t.bigint "activity_id", null: false
+    t.json "completions", default: []
+    t.datetime "created_at", null: false
+    t.datetime "last_completed_at"
+    t.integer "rating"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["activity_id"], name: "index_user_interactions_on_activity_id"
+    t.index ["user_id", "activity_id"], name: "index_user_interactions_on_user_id_and_activity_id", unique: true
+    t.index ["user_id"], name: "index_user_interactions_on_user_id"
+  end
+
+  create_table "public.users", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "email_address", null: false
+    t.string "password_digest", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email_address"], name: "index_users_on_email_address", unique: true
+  end
+
+  add_foreign_key "public.sessions", "public.users"
+  add_foreign_key "public.user_interactions", "public.activities"
+  add_foreign_key "public.user_interactions", "public.users"
 
 end

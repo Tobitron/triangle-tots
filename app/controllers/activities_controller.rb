@@ -1,4 +1,6 @@
 class ActivitiesController < ApplicationController
+  allow_unauthenticated_access
+
   def index
     @activities = Activity.all
 
@@ -17,9 +19,8 @@ class ActivitiesController < ApplicationController
     weather_strategy = WeatherService.analyze_rain_forecast(weather_data[:forecast])
     @weather_strategy = weather_strategy
 
-    # Get user interactions from localStorage (passed as JSON parameter)
-    interactions_json = params[:interactions]
-    @interactions = interactions_json ? JSON.parse(interactions_json) : {}
+    # Get user interactions from database (logged in) or localStorage (anonymous)
+    @interactions = load_interactions
 
     # Determine view mode: "now" or "all" (default to "now")
     @view_mode = params[:view] || "now"
@@ -63,6 +64,26 @@ class ActivitiesController < ApplicationController
   end
 
   private
+
+  def load_interactions
+    if Current.user
+      # Load from database for logged-in users
+      user_interactions = Current.user.user_interactions.includes(:activity)
+      interactions = {}
+      user_interactions.each do |ui|
+        interactions[ui.activity_id.to_s] = {
+          "rating" => ui.rating,
+          "completions" => ui.completions || [],
+          "lastCompleted" => ui.last_completed_at&.iso8601
+        }
+      end
+      interactions
+    else
+      # Load from URL params for anonymous users (passed from localStorage)
+      interactions_json = params[:interactions]
+      interactions_json ? JSON.parse(interactions_json) : {}
+    end
+  end
 
   def sort_with_weather_penalty(activities, weather_strategy)
     if weather_strategy == :deprioritize_outdoor

@@ -1,4 +1,13 @@
 Rails.application.routes.draw do
+  resource :session
+  resources :passwords, param: :token
+  resource :registration, only: [:new, :create]
+
+  # User interactions (for logged-in users)
+  post "interactions/rate", to: "user_interactions#rate"
+  post "interactions/mark_done", to: "user_interactions#mark_done"
+  post "interactions/import", to: "user_interactions#import"
+
   # Activities routes
   resources :activities, only: [:index, :show]
 

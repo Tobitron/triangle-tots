@@ -5,11 +5,24 @@
         <h1 class="text-4xl font-bold text-gray-900 mb-2">Triangle Tots</h1>
         <p class="text-lg text-gray-600">Activities for 3-year-olds in the Triangle area</p>
       </div>
-      <% if @home_location %>
-        <a href="#" onclick="LocationManager.clearLocation(); LocationManager.requestGeolocation(); return false;" class="text-sm text-blue-600 hover:text-blue-800 underline whitespace-nowrap mt-2">
-          Change Location
-        </a>
-      <% end %>
+      <div class="flex flex-col items-end gap-2 mt-2">
+        <% if authenticated? %>
+          <div class="flex items-center gap-3 text-sm">
+            <span class="text-gray-600"><%= Current.user.email_address %></span>
+            <%= button_to "Log out", session_path, method: :delete, class: "text-blue-600 hover:text-blue-800 underline" %>
+          </div>
+        <% else %>
+          <div class="flex items-center gap-3 text-sm">
+            <%= link_to "Log in", new_session_path, class: "text-blue-600 hover:text-blue-800 underline" %>
+            <%= link_to "Sign up", new_registration_path, class: "text-blue-600 hover:text-blue-800 underline" %>
+          </div>
+        <% end %>
+        <% if @home_location %>
+          <a href="#" onclick="LocationManager.clearLocation(); LocationManager.requestGeolocation(); return false;" class="text-sm text-blue-600 hover:text-blue-800 underline whitespace-nowrap">
+            Change Location
+          </a>
+        <% end %>
+      </div>
     </div>
 
     <%# Weather indicator %>
@@ -78,47 +91,47 @@
 
             <p class="text-gray-600 text-sm line-clamp-2 mb-4"><%= activity.description %></p>
 
-            <%# Address row with distance directly to the right %>
-            <div class="flex items-center gap-2 text-sm text-gray-500 mb-4">
-              <svg class="inline-block w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-              </svg>
-              <span><%= activity.address&.split(',')&.first || 'Chapel Hill/Durham' %></span>
-              <% if @home_location %>
-                <span class="text-gray-400">•</span>
-                <span><%= format_distance(activity.distance) %></span>
-              <% end %>
-            </div>
-
-            <%# Rating buttons in bottom right %>
+            <%# Address row with distance and rating buttons %>
             <%
               interaction = @interactions[activity.id.to_s]
               has_thumbs_up = interaction && interaction['rating'] == 1
               has_thumbs_down = interaction && interaction['rating'] == -1
             %>
-            <div class="flex justify-end gap-2 mt-2">
-              <%# Thumbs Up Button %>
-              <button
-                onclick="event.stopPropagation(); event.preventDefault(); ActivityInteractions.rate(<%= activity.id %>, 1); return false;"
-                class="px-2 py-1 rounded border <%= has_thumbs_up ? 'bg-green-100 border-green-500' : 'border-gray-300 hover:bg-green-50 hover:border-green-400' %> transition-colors"
-                data-activity-id="<%= activity.id %>"
-                data-interaction-type="thumbs-up"
-                title="I like this activity"
-              >
-                <span class="text-lg">👍</span>
-              </button>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2 text-sm text-gray-500">
+                <svg class="inline-block w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span><%= activity.address&.split(',')&.first || 'Chapel Hill/Durham' %></span>
+                <% if @home_location %>
+                  <span class="text-gray-400">•</span>
+                  <span><%= format_distance(activity.distance) %></span>
+                <% end %>
+              </div>
 
-              <%# Thumbs Down Button %>
-              <button
-                onclick="event.stopPropagation(); event.preventDefault(); ActivityInteractions.rate(<%= activity.id %>, -1); return false;"
-                class="px-2 py-1 rounded border <%= has_thumbs_down ? 'bg-red-100 border-red-500' : 'border-gray-300 hover:bg-red-50 hover:border-red-400' %> transition-colors"
-                data-activity-id="<%= activity.id %>"
-                data-interaction-type="thumbs-down"
-                title="Not interested in this activity"
-              >
-                <span class="text-lg">👎</span>
-              </button>
+              <%# Rating buttons on far right %>
+              <div class="flex gap-2 flex-shrink-0 ml-4">
+                <button
+                  onclick="event.stopPropagation(); event.preventDefault(); ActivityInteractions.rate(<%= activity.id %>, 1); return false;"
+                  class="px-2 py-1 rounded border <%= has_thumbs_up ? 'bg-green-100 border-green-500' : 'border-gray-300 hover:bg-green-50 hover:border-green-400' %> transition-colors"
+                  data-activity-id="<%= activity.id %>"
+                  data-interaction-type="thumbs-up"
+                  title="I like this activity"
+                >
+                  <span class="text-lg">👍</span>
+                </button>
+
+                <button
+                  onclick="event.stopPropagation(); event.preventDefault(); ActivityInteractions.rate(<%= activity.id %>, -1); return false;"
+                  class="px-2 py-1 rounded border <%= has_thumbs_down ? 'bg-red-100 border-red-500' : 'border-gray-300 hover:bg-red-50 hover:border-red-400' %> transition-colors"
+                  data-activity-id="<%= activity.id %>"
+                  data-interaction-type="thumbs-down"
+                  title="Not interested in this activity"
+                >
+                  <span class="text-lg">👎</span>
+                </button>
+              </div>
             </div>
           </div>
         <% end %>
