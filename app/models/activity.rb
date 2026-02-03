@@ -1,4 +1,7 @@
 class Activity < ApplicationRecord
+  # Associations
+  has_many :user_interactions, dependent: :destroy
+
   # Virtual attributes
   attr_accessor :distance      # Calculated distance from home (Milestone 2)
   attr_accessor :status        # Current status (:open, :closing_soon, :opens_soon)
@@ -18,6 +21,15 @@ class Activity < ApplicationRecord
     event: 'event',
     restaurant: 'restaurant'
   }, prefix: true
+
+  # Scopes
+  scope :excluding_thumbs_down_for, ->(user) {
+    if user
+      where.not(id: UserInteraction.where(user_id: user.id, rating: -1).select(:activity_id))
+    else
+      all
+    end
+  }
 
   # Validations
   validates :name, presence: true

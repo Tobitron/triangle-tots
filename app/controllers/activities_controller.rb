@@ -2,7 +2,7 @@ class ActivitiesController < ApplicationController
   allow_unauthenticated_access
 
   def index
-    @activities = Activity.all
+    @activities = Activity.excluding_thumbs_down_for(Current.user)
 
     # Extract home location from query params (or fall back to central Triangle)
     home_lat = params[:home_lat]&.to_f || 36.0014  # Durham
@@ -21,6 +21,12 @@ class ActivitiesController < ApplicationController
 
     # Get user interactions from database (logged in) or localStorage (anonymous)
     @interactions = load_interactions
+
+    # Filter out thumbs-downed activities for anonymous users
+    unless Current.user
+      thumbs_down_ids = @interactions.select { |_, data| data['rating'] == -1 }.keys.map(&:to_i)
+      @activities = @activities.where.not(id: thumbs_down_ids) if thumbs_down_ids.any?
+    end
 
     # Determine view mode: "now" or "all" (default to "now")
     @view_mode = params[:view] || "now"

@@ -190,7 +190,10 @@
 
             this.saveStorage(storage);
 
-            if (reloadPage) {
+            // Always reload for thumbs down to hide the activity immediately
+            if (rating === -1) {
+              this.reloadWithInteractions();
+            } else if (reloadPage) {
               this.reloadWithInteractions();
             } else {
               this.updateButtonStates();
