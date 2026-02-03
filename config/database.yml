@@ -77,11 +77,7 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: postgres
-    username: postgres
-    password: <%= ENV["SUPABASE_DB_PASSWORD"] %>
-    host: db.qbjvwqnfvwbllxqjtrcj.supabase.co
-    port: 5432
+    url: <%= ENV["DATABASE_URL"] %>
   cache:
     <<: *primary_production
     migrations_paths: db/cache_migrate
