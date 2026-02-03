@@ -1,0 +1,30 @@
+{
+  "settings": {},
+  "rules": [
+    {
+      "patterns": [
+        "/activities$"
+      ],
+      "properties": {
+        "presentation": "replace"
+      }
+    },
+    {
+      "patterns": [
+        "/activities/*"
+      ],
+      "properties": {
+        "presentation": "push"
+      }
+    },
+    {
+      "patterns": [
+        "/new_session",
+        "/registration"
+      ],
+      "properties": {
+        "presentation": "modal"
+      }
+    }
+  ]
+}
