@@ -97,11 +97,16 @@ class ActivitiesController < ApplicationController
         }
       end
       interactions
+    elsif turbo_native_app? && request.headers['X-Native-Interactions'].present?
+      # Load from native storage header (for native app anonymous users)
+      JSON.parse(request.headers['X-Native-Interactions'])
     else
       # Load from URL params for anonymous users (passed from localStorage)
       interactions_json = params[:interactions]
       interactions_json ? JSON.parse(interactions_json) : {}
     end
+  rescue JSON::ParserError
+    {}
   end
 
   def sort_with_weather_penalty(activities, weather_strategy)

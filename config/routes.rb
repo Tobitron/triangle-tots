@@ -8,6 +8,12 @@ Rails.application.routes.draw do
   post "interactions/mark_done", to: "user_interactions#mark_done"
   post "interactions/import", to: "user_interactions#import"
 
+  # Native app bridge endpoints
+  namespace :native do
+    post "interactions/sync", to: "storage#sync"
+    get "interactions/export", to: "storage#export"
+  end
+
   # Activities routes
   resources :activities, only: [:index, :show]
 

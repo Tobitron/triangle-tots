@@ -18,7 +18,7 @@
           </div>
         <% end %>
         <% if @home_location %>
-          <a href="#" onclick="LocationManager.clearLocation(); LocationManager.requestGeolocation(); return false;" class="text-sm text-blue-600 hover:text-blue-800 underline whitespace-nowrap">
+          <a href="#" data-action="click->location#changeLocation" class="text-sm text-blue-600 hover:text-blue-800 underline whitespace-nowrap">
             Change Location
           </a>
         <% end %>
@@ -135,22 +135,22 @@
               </div>
 
               <%# Rating buttons on far right %>
-              <div class="flex gap-2 flex-shrink-0 ml-4">
+              <div class="flex gap-2 flex-shrink-0 ml-4" data-controller="interaction" data-interaction-activity-id-value="<%= activity.id %>" data-interaction-logged-in-value="<%= authenticated? %>">
                 <button
-                  onclick="event.stopPropagation(); event.preventDefault(); ActivityInteractions.rate(<%= activity.id %>, 1); return false;"
+                  data-action="click->interaction#rate:stop:prevent"
+                  data-interaction-target="thumbsUp"
+                  data-interaction-rating-param="1"
                   class="px-2 py-1 rounded border <%= has_thumbs_up ? 'bg-green-100 border-green-500' : 'border-gray-300 hover:bg-green-50 hover:border-green-400' %> transition-colors"
-                  data-activity-id="<%= activity.id %>"
-                  data-interaction-type="thumbs-up"
                   title="I like this activity"
                 >
                   <span class="text-lg">👍</span>
                 </button>
 
                 <button
-                  onclick="event.stopPropagation(); event.preventDefault(); ActivityInteractions.rate(<%= activity.id %>, -1); return false;"
+                  data-action="click->interaction#rate:stop:prevent"
+                  data-interaction-target="thumbsDown"
+                  data-interaction-rating-param="-1"
                   class="px-2 py-1 rounded border <%= has_thumbs_down ? 'bg-red-100 border-red-500' : 'border-gray-300 hover:bg-red-50 hover:border-red-400' %> transition-colors"
-                  data-activity-id="<%= activity.id %>"
-                  data-interaction-type="thumbs-down"
                   title="Not interested in this activity"
                 >
                   <span class="text-lg">👎</span>
