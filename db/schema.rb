@@ -11,17 +11,10 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[8.1].define(version: 2026_02_01_235102) do
-  create_schema "extensions"
-
   # These are extensions that must be enabled in order to support this database
-  enable_extension "extensions.pg_stat_statements"
-  enable_extension "extensions.pgcrypto"
-  enable_extension "extensions.uuid-ossp"
-  enable_extension "graphql.pg_graphql"
-  enable_extension "pg_catalog.plpgsql"
-  enable_extension "vault.supabase_vault"
+  enable_extension "plpgsql"
 
-  create_table "public.activities", force: :cascade do |t|
+  create_table "activities", force: :cascade do |t|
     t.string "activity_type", null: false
     t.string "address"
     t.integer "cost_level", default: 0, null: false
@@ -49,7 +42,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_235102) do
     t.index ["start_date", "end_date"], name: "index_activities_on_start_date_and_end_date"
   end
 
-  create_table "public.sessions", force: :cascade do |t|
+  create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
     t.datetime "updated_at", null: false
@@ -58,7 +51,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_235102) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
-  create_table "public.user_interactions", force: :cascade do |t|
+  create_table "user_interactions", force: :cascade do |t|
     t.bigint "activity_id", null: false
     t.json "completions", default: []
     t.datetime "created_at", null: false
@@ -71,7 +64,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_235102) do
     t.index ["user_id"], name: "index_user_interactions_on_user_id"
   end
 
-  create_table "public.users", force: :cascade do |t|
+  create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email_address", null: false
     t.string "password_digest", null: false
@@ -79,8 +72,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_235102) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
-  add_foreign_key "public.sessions", "public.users"
-  add_foreign_key "public.user_interactions", "public.activities"
-  add_foreign_key "public.user_interactions", "public.users"
+  add_foreign_key "sessions", "users"
+  add_foreign_key "user_interactions", "activities"
+  add_foreign_key "user_interactions", "users"
 
 end
