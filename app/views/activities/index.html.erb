@@ -34,12 +34,16 @@
       </div>
     <% end %>
 
-    <%# Tabs for Now and All views %>
+    <%# Tabs for Now, Weekend, and All views %>
     <div class="mt-6 border-b border-gray-200">
       <nav class="-mb-px flex space-x-8">
         <%= link_to activities_path(view: "now", home_lat: @home_location[:latitude], home_lng: @home_location[:longitude]),
                     class: "#{@view_mode == 'now' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" do %>
           Now
+        <% end %>
+        <%= link_to activities_path(view: "weekend", home_lat: @home_location[:latitude], home_lng: @home_location[:longitude]),
+                    class: "#{@view_mode == 'weekend' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" do %>
+          Weekend Events
         <% end %>
         <%= link_to activities_path(view: "all", home_lat: @home_location[:latitude], home_lng: @home_location[:longitude]),
                     class: "#{@view_mode == 'all' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" do %>
@@ -48,15 +52,28 @@
       </nav>
     </div>
 
-    <p class="text-sm text-gray-500 mt-4"><%= @activities.count %> <%= @view_mode == "now" ? "available now" : "activities" %></p>
+    <p class="text-sm text-gray-500 mt-4">
+      <% if @view_mode == "weekend" %>
+        <%= pluralize(@activities.count, "event") %> this weekend
+      <% elsif @view_mode == "now" %>
+        <%= @activities.count %> available now
+      <% else %>
+        <%= @activities.count %> activities
+      <% end %>
+    </p>
   </div>
 
   <% if @activities.empty? %>
     <%# Empty state %>
     <div class="text-center py-12">
-      <p class="text-gray-500 text-lg">No activities <%= @view_mode == "now" ? "available right now" : "found" %></p>
-      <% if @view_mode == "now" %>
+      <% if @view_mode == "weekend" %>
+        <p class="text-gray-500 text-lg">No events scheduled for this weekend.</p>
+        <p class="text-gray-400 text-sm mt-2">Check back later or explore other activities!</p>
+      <% elsif @view_mode == "now" %>
+        <p class="text-gray-500 text-lg">No activities available right now</p>
         <p class="text-gray-400 text-sm mt-2">Check back later or switch to "All Activities" to see the full list</p>
+      <% else %>
+        <p class="text-gray-500 text-lg">No activities found</p>
       <% end %>
     </div>
   <% else %>
@@ -90,6 +107,13 @@
             </div>
 
             <p class="text-gray-600 text-sm line-clamp-2 mb-4"><%= activity.description %></p>
+
+            <%# Show event date/time for weekend view %>
+            <% if @view_mode == "weekend" && activity.start_date %>
+              <p class="text-sm text-blue-600 font-medium mb-3">
+                <%= activity.start_date.strftime("%A, %B %d at %I:%M %p") %>
+              </p>
+            <% end %>
 
             <%# Address row with distance and rating buttons %>
             <%

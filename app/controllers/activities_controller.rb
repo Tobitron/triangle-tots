@@ -50,6 +50,19 @@ class ActivitiesController < ApplicationController
         # Fallback to original sorting without personalization
         @activities = sort_with_weather_penalty(@activities, weather_strategy)
       end
+    elsif @view_mode == "weekend"
+      # Filter for weekend events
+      @activities = ActivityFilter.filter_for_weekend(@activities, Time.current.in_time_zone('Eastern Time (US & Canada)'))
+
+      # Add distance calculations
+      @activities.each do |activity|
+        activity.distance = activity.distance_from(home_lat, home_lng)
+      end
+
+      # Sort by date (Saturday events first, then Sunday), then by distance
+      @activities = @activities.sort_by do |a|
+        [a.start_date.to_date, a.distance.nil? ? 1 : 0, a.distance || Float::INFINITY]
+      end
     else
       # "All" view - existing Milestone 2 behavior
       @activities.each do |activity|

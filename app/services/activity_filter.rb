@@ -18,6 +18,35 @@ class ActivityFilter
     end
   end
 
+  # Filter activities for upcoming weekend events
+  # Returns only events (is_event: true) happening on next Sat/Sun
+  def self.filter_for_weekend(activities, current_time = Time.current)
+    # Find next Saturday and Sunday
+    today = current_time.to_date
+    days_until_saturday = (6 - today.wday) % 7
+    days_until_saturday = 7 if days_until_saturday == 0 && today.wday != 6 # If today is not Saturday, go to next week
+
+    next_saturday = today + days_until_saturday.days
+    next_sunday = next_saturday + 1.day
+
+    # Handle edge case: if today IS Saturday, use today and tomorrow
+    if today.saturday?
+      next_saturday = today
+      next_sunday = today + 1.day
+    elsif today.sunday?
+      # If today is Sunday, show next weekend (6-7 days away)
+      next_saturday = today + 6.days
+      next_sunday = today + 7.days
+    end
+
+    # Filter to events only, happening on next Sat or Sun
+    activities.select do |activity|
+      activity.is_event &&
+      activity.start_date.present? &&
+      (activity.start_date.to_date == next_saturday || activity.start_date.to_date == next_sunday)
+    end
+  end
+
   # Apply weather-based filtering
   # :hide_outdoor - remove all outdoor activities
   # :deprioritize_outdoor - keep outdoor activities but don't filter them out

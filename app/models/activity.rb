@@ -53,19 +53,54 @@ class Activity < ApplicationRecord
 
   # Is activity open at a given time?
   def open_at?(time = Time.current)
-    HoursParser.open_at?(hours_today, time)
+    if is_event?
+      # For events, check if time is between start_date and end_date
+      return false if start_date.blank? || end_date.blank?
+      time >= start_date && time <= end_date
+    else
+      # For evergreen activities, check hours
+      HoursParser.open_at?(hours_today, time)
+    end
   end
 
   # Does activity open within N hours from now?
   # Returns: opening time string or nil
   def opens_within?(within_hours)
-    HoursParser.opens_within?(hours_today, Time.current, within_hours)
+    if is_event?
+      # For events, check if start_date is within N hours
+      return nil if start_date.blank?
+      current_time = Time.current
+      time_until_start = ((start_date - current_time) / 3600).round # hours
+
+      if time_until_start > 0 && time_until_start <= within_hours
+        start_date.strftime("%I:%M %p")
+      else
+        nil
+      end
+    else
+      # For evergreen activities, check hours
+      HoursParser.opens_within?(hours_today, Time.current, within_hours)
+    end
   end
 
   # Does activity close within N hours from now?
   # Returns: closing time string or nil
   def closes_within?(within_hours)
-    HoursParser.closes_within?(hours_today, Time.current, within_hours)
+    if is_event?
+      # For events, check if end_date is within N hours
+      return nil if end_date.blank?
+      current_time = Time.current
+      time_until_end = ((end_date - current_time) / 3600).round # hours
+
+      if time_until_end > 0 && time_until_end <= within_hours
+        end_date.strftime("%I:%M %p")
+      else
+        nil
+      end
+    else
+      # For evergreen activities, check hours
+      HoursParser.closes_within?(hours_today, Time.current, within_hours)
+    end
   end
 
   # Calculate current status for display
@@ -74,37 +109,58 @@ class Activity < ApplicationRecord
   def calculate_status
     current_time = Time.current
 
-    # Check if currently open
-    if open_at?(current_time)
-      # Check if closing soon (within 1 hour)
-      closing_time = closes_within?(1)
-      if closing_time
-        # For dawn-dusk, show "dusk" instead of time
-        if hours_today&.downcase&.include?("dusk")
-          return [:closing_soon, "dusk"]
-        else
+    if is_event?
+      # For events, show status based on start/end dates
+      if open_at?(current_time)
+        # Event is currently happening
+        closing_time = closes_within?(1)
+        if closing_time
           return [:closing_soon, closing_time]
+        else
+          # Show end time
+          return [:open, end_date.strftime("%I:%M %p")]
         end
       else
-        # Show regular closing time
-        # For dawn-dusk hours, show "dusk" instead of specific time
-        if hours_today&.downcase&.include?("dawn") && hours_today&.downcase&.include?("dusk")
-          return [:open, "dusk"]
-        else
-          closing_time = HoursParser.get_closing_time(hours_today)
-          time_str = closing_time ? HoursParser.send(:format_time_12hr, closing_time) : nil
-          return [:open, time_str]
+        # Event hasn't started yet - check if it starts soon
+        opening_time = opens_within?(2)
+        if opening_time
+          return [:opens_soon, opening_time]
         end
       end
     else
-      # Check if opens soon (within 2 hours)
-      opening_time = opens_within?(2)
-      if opening_time
-        # For dawn-dusk, show "dawn" instead of time
-        if hours_today&.downcase&.include?("dawn")
-          return [:opens_soon, "dawn"]
+      # For evergreen activities, use hours-based logic
+      # Check if currently open
+      if open_at?(current_time)
+        # Check if closing soon (within 1 hour)
+        closing_time = closes_within?(1)
+        if closing_time
+          # For dawn-dusk, show "dusk" instead of time
+          if hours_today&.downcase&.include?("dusk")
+            return [:closing_soon, "dusk"]
+          else
+            return [:closing_soon, closing_time]
+          end
         else
-          return [:opens_soon, opening_time]
+          # Show regular closing time
+          # For dawn-dusk hours, show "dusk" instead of specific time
+          if hours_today&.downcase&.include?("dawn") && hours_today&.downcase&.include?("dusk")
+            return [:open, "dusk"]
+          else
+            closing_time = HoursParser.get_closing_time(hours_today)
+            time_str = closing_time ? HoursParser.send(:format_time_12hr, closing_time) : nil
+            return [:open, time_str]
+          end
+        end
+      else
+        # Check if opens soon (within 2 hours)
+        opening_time = opens_within?(2)
+        if opening_time
+          # For dawn-dusk, show "dawn" instead of time
+          if hours_today&.downcase&.include?("dawn")
+            return [:opens_soon, "dawn"]
+          else
+            return [:opens_soon, opening_time]
+          end
         end
       end
     end
