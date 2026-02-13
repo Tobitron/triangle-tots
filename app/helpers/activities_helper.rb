@@ -5,7 +5,7 @@ module ActivitiesHelper
 
     icon_mapping = {
       'library' => 'icon-library.png',
-      'museum' => 'icon-library.png',
+      'museum' => 'icon-museum.png',
       'class_activity' => 'icon-library.png',
       'restaurant' => 'icon-library.png',
 
