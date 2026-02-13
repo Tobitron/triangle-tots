@@ -121,6 +121,7 @@ GEM
       tzinfo
     ffi (1.17.3)
     ffi (1.17.3-arm64-darwin)
+    ffi (1.17.3-x86_64-linux-gnu)
     fugit (1.12.1)
       et-orbi (~> 1.4)
       raabro (~> 1.4)
@@ -205,6 +206,8 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.0-arm64-darwin)
       racc (~> 1.4)
+    nokogiri (1.19.0-x86_64-linux-gnu)
+      racc (~> 1.4)
     ostruct (0.6.3)
     parallel (1.27.0)
     parser (3.3.10.1)
@@ -212,6 +215,7 @@ GEM
       racc
     pg (1.6.3)
     pg (1.6.3-arm64-darwin)
+    pg (1.6.3-x86_64-linux)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -349,9 +353,11 @@ GEM
       tailwindcss-ruby (~> 4.0)
     tailwindcss-ruby (4.1.18)
     tailwindcss-ruby (4.1.18-arm64-darwin)
+    tailwindcss-ruby (4.1.18-x86_64-linux-gnu)
     thor (1.5.0)
     thruster (0.1.17)
     thruster (0.1.17-arm64-darwin)
+    thruster (0.1.17-x86_64-linux)
     timeout (0.6.0)
     tsort (0.2.0)
     turbo-rails (2.0.23)
@@ -381,6 +387,7 @@ GEM
 PLATFORMS
   arm64-darwin
   ruby
+  x86_64-linux
 
 DEPENDENCIES
   bcrypt (~> 3.1.7)
