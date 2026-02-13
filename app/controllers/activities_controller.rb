@@ -43,6 +43,9 @@ class ActivitiesController < ApplicationController
         activity.distance = activity.distance_from(home_lat, home_lng)
       end
 
+      # Filter out activities beyond 8 miles (museums exempt)
+      @activities = ActivityFilter.filter_by_distance(@activities)
+
       # Sort by distance with personalization if interactions present
       if @interactions.present?
         @activities = RecommendationScorer.sort_with_scores(
@@ -65,6 +68,9 @@ class ActivitiesController < ApplicationController
         activity.distance = activity.distance_from(home_lat, home_lng)
       end
 
+      # Filter out activities beyond 8 miles (museums exempt)
+      @activities = ActivityFilter.filter_by_distance(@activities)
+
       # Sort by date (Saturday events first, then Sunday), then by distance
       @activities = @activities.sort_by do |a|
         [a.start_date.to_date, a.distance.nil? ? 1 : 0, a.distance || Float::INFINITY]
@@ -74,6 +80,7 @@ class ActivitiesController < ApplicationController
       @activities.each do |activity|
         activity.distance = activity.distance_from(home_lat, home_lng)
       end
+      @activities = ActivityFilter.filter_by_distance(@activities)
       @activities = @activities.sort_by { |a| [a.distance.nil? ? 1 : 0, a.distance || Float::INFINITY] }
     end
   end

@@ -27,10 +27,26 @@
 
     <%# Weather indicator %>
     <% if @current_weather %>
-      <div class="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
-        <p class="text-sm text-gray-700">
-          <%= weather_summary(@current_weather, @weather_strategy) %>
-        </p>
+      <div class="mt-5 flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-100 rounded-full text-sm shadow-sm w-fit">
+        <span class="text-base"><%= weather_icon(@current_weather[:condition]) %></span>
+        <% if @current_weather[:temp_f] %>
+          <span class="font-semibold text-gray-900"><%= @current_weather[:temp_f] %>&deg;</span>
+        <% end %>
+        <% if @weather_strategy == :hide_outdoor %>
+          <span class="text-blue-700 font-medium">Rain expected &mdash; indoor only</span>
+        <% elsif @weather_strategy == :deprioritize_outdoor %>
+          <span class="text-blue-700 font-medium">Rain in forecast</span>
+        <% elsif @current_weather[:condition].present? %>
+          <span class="text-gray-600"><%= @current_weather[:condition] %></span>
+        <% end %>
+        <% if @current_weather[:high_f] && @current_weather[:low_f] %>
+          <span class="text-gray-300">&middot;</span>
+          <span class="text-gray-500">H:<%= @current_weather[:high_f] %>&deg; L:<%= @current_weather[:low_f] %>&deg;</span>
+        <% end %>
+        <% if @current_weather[:precip_chance] && @current_weather[:precip_chance] > 0 %>
+          <span class="text-gray-300">&middot;</span>
+          <span class="text-blue-600"><%= @current_weather[:precip_chance] %>% rain</span>
+        <% end %>
       </div>
     <% end %>
 
