@@ -5,19 +5,23 @@ class WeatherService
   CACHE_DURATION = 30.minutes
   RAIN_PROBABILITY_THRESHOLD = 60  # Percentage
   SIGNIFICANT_RAIN_HOURS_THRESHOLD = 3  # Hours
-  API_KEY = ENV["WEATHER_API_KEY"]
 
   # Fetch weather forecast for a location
   # Returns: { current: {...}, forecast: [...], strategy: :hide_outdoor/:deprioritize_outdoor/:normal }
   def self.fetch_forecast(lat, lng)
     cache_key = "weather:#{lat.round(4)}:#{lng.round(4)}:#{Time.current.hour}"
 
-    Rails.cache.fetch(cache_key, expires_in: CACHE_DURATION) do
+    # Try cache first, fall back to direct API call if cache fails
+    begin
+      Rails.cache.fetch(cache_key, expires_in: CACHE_DURATION) do
+        fetch_from_api(lat, lng)
+      end
+    rescue StandardError => e
+      Rails.logger.error("Weather cache error: #{e.message}, falling back to direct API call")
       fetch_from_api(lat, lng)
     end
   rescue StandardError => e
     Rails.logger.error("Weather API error: #{e.message}")
-    # Return default weather (assume good weather if API fails)
     default_weather_response
   end
 
@@ -43,11 +47,12 @@ class WeatherService
   private
 
   def self.fetch_from_api(lat, lng)
-    return default_weather_response if API_KEY.blank?
+    api_key = ENV["WEATHER_API_KEY"]
+    return default_weather_response if api_key.blank?
 
     # Fetch current weather + forecast for 1 day
     response = get("/forecast.json", query: {
-      key: API_KEY,
+      key: api_key,
       q: "#{lat},#{lng}",
       days: 1,  # 1 day of forecast
       aqi: "no"  # We don't need air quality data
