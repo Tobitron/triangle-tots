@@ -75,32 +75,11 @@ class ActivityFilter
     end
   end
 
-  # When "Now" feed is empty, relax filters to show activities opening soon
-  # Show next 5-10 activities that will open in the future (today or tomorrow)
+  # When "Now" feed is empty, relax weather filter but keep the same time constraint
+  # Only show activities that are opening within 2 hours (same definition of "soon")
   def self.relax_filters_for_empty_state(activities, current_time)
-    # Find activities that will open later today or tomorrow
-    future_activities = activities.select do |activity|
-      !activity.open_at?(current_time) &&
-        (activity.opens_within?(12).present? || will_open_tomorrow?(activity))
+    activities.select do |activity|
+      !activity.open_at?(current_time) && activity.opens_within?(2).present?
     end
-
-    # Take up to 10 activities
-    future_activities.take(10)
-  end
-
-  # Check if activity will open tomorrow (for evening edge case)
-  def self.will_open_tomorrow?(activity)
-    return false if activity.hours.nil?
-
-    # If it's evening and activity is closed, it might open tomorrow
-    tomorrow = (Time.current + 1.day).beginning_of_day
-    tomorrow_day_name = tomorrow.strftime("%A").downcase
-    tomorrow_hours = activity.hours[tomorrow_day_name]
-
-    return false if tomorrow_hours.blank? || tomorrow_hours.downcase == "closed"
-
-    # Check if it opens anytime tomorrow
-    opening_time = HoursParser.get_opening_time(tomorrow_hours)
-    opening_time.present?
   end
 end
