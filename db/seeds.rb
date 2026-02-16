@@ -48,25 +48,6 @@ Activity.create!([
     }
   },
   {
-    name: "Hargraves Park",
-    description: "Community park with playground equipment and open fields in central Chapel Hill. Close to downtown and easy to reach.",
-    address: "216 N Roberson St, Chapel Hill, NC 27516",
-    latitude: 35.9190,
-    longitude: -79.0509,
-    activity_type: "playground",
-    indoor: false,
-    cost_level: 0,
-    hours: {
-      monday: "dawn - dusk",
-      tuesday: "dawn - dusk",
-      wednesday: "dawn - dusk",
-      thursday: "dawn - dusk",
-      friday: "dawn - dusk",
-      saturday: "dawn - dusk",
-      sunday: "dawn - dusk"
-    }
-  },
-  {
     name: "Pullen Park",
     description: "Raleigh's beloved classic park with a carousel, train ride, paddle boats, and toddler-friendly playground. The carousel and train are a huge hit for 3-year-olds. Small fee per ride.",
     address: "520 Ashe Ave, Raleigh, NC 27606",
@@ -88,7 +69,7 @@ Activity.create!([
   },
   {
     name: "Homestead Park Playground",
-    description: "Large playground with slides, swings, and climbing structures. Shaded picnic areas available. Great for toddlers with separate play area for younger kids.",
+    description: "Known as \"Dinosaur Park\" for its iconic purple dinosaur slide. Dedicated toddler play area plus a full-size structure, rubber surface, and shaded picnic tables. A Chapel Hill playgroup staple. Note: restrooms closed October–May.",
     address: "200 Homestead Rd, Chapel Hill, NC 27516",
     latitude: 35.9132,
     longitude: -79.0558,
@@ -107,11 +88,11 @@ Activity.create!([
     website: "https://www.townofchapelhill.org/government/departments-services/parks-recreation"
   },
   {
-    name: "Pigeon House Branch Park",
-    description: "Playground with swings, slides, and a small splash pad area. Basketball courts and walking trails nearby.",
-    address: "500 Pigeon House Rd, Chapel Hill, NC 27516",
-    latitude: 35.9421,
-    longitude: -79.0389,
+    name: "Wilson Park",
+    description: "Carrboro family favorite with new play equipment, a sandbox with diggers, climbing dome, swings, and slides. Baseball field, tennis courts, and Bolin Creek Greenway access nearby.",
+    address: "110 Williams St, Carrboro, NC 27510",
+    latitude: 35.9198,
+    longitude: -79.0755,
     activity_type: "playground",
     indoor: false,
     cost_level: 0,
@@ -123,7 +104,48 @@ Activity.create!([
       friday: "dawn - dusk",
       saturday: "dawn - dusk",
       sunday: "dawn - dusk"
-    }
+    },
+    website: "https://townofcarrboro.org/370/Wilson-Park"
+  },
+  {
+    name: "Chapel Hill Community Center Playground",
+    description: "Fully rebuilt inclusive playground opened April 2025 with ADA ramps, inclusive spinners, sensory features, and toddler-friendly swings on a rubber surface. One of Chapel Hill's best. Parking can be tight on weekends.",
+    address: "120 S Estes Dr, Chapel Hill, NC 27514",
+    latitude: 35.9155,
+    longitude: -79.0469,
+    activity_type: "playground",
+    indoor: false,
+    cost_level: 0,
+    hours: {
+      monday: "dawn - dusk",
+      tuesday: "dawn - dusk",
+      wednesday: "dawn - dusk",
+      thursday: "dawn - dusk",
+      friday: "dawn - dusk",
+      saturday: "dawn - dusk",
+      sunday: "dawn - dusk"
+    },
+    website: "https://www.chapelhillnc.gov/government/departments-services/parks-and-recreation"
+  },
+  {
+    name: "Oakwood Park",
+    description: "One of the few fenced playgrounds in Chapel Hill — great for toddlers who like to run. Shady, with 2024 inclusive equipment upgrades. Small neighborhood park; no restrooms and street parking only.",
+    address: "20 Oakwood Dr, Chapel Hill, NC 27517",
+    latitude: 35.8968,
+    longitude: -79.0573,
+    activity_type: "playground",
+    indoor: false,
+    cost_level: 0,
+    hours: {
+      monday: "dawn - dusk",
+      tuesday: "dawn - dusk",
+      wednesday: "dawn - dusk",
+      thursday: "dawn - dusk",
+      friday: "dawn - dusk",
+      saturday: "dawn - dusk",
+      sunday: "dawn - dusk"
+    },
+    website: "https://www.chapelhillnc.gov/government/departments-services/parks-and-recreation"
   }
 ])
 
