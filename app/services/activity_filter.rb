@@ -47,15 +47,12 @@ class ActivityFilter
     end
   end
 
-  # Filter activities beyond 8 miles, except museums
-  MAX_DISTANCE_MILES = 8
-
-  DISTANCE_LIMITED_TYPES = %w[playground library].freeze
+  # Filter activities beyond 15 miles
+  MAX_DISTANCE_MILES = 15
 
   def self.filter_by_distance(activities)
     activities.select do |activity|
-      !DISTANCE_LIMITED_TYPES.include?(activity.activity_type) ||
-        activity.distance.nil? ||
+      activity.distance.nil? ||
         activity.distance <= MAX_DISTANCE_MILES
     end
   end
