@@ -47,12 +47,13 @@ class ActivityFilter
     end
   end
 
-  # Filter activities beyond 15 miles
+  # Filter activities beyond 15 miles (museums are exempt)
   MAX_DISTANCE_MILES = 15
 
   def self.filter_by_distance(activities)
     activities.select do |activity|
-      activity.distance.nil? ||
+      activity.activity_type == "museum" ||
+        activity.distance.nil? ||
         activity.distance <= MAX_DISTANCE_MILES
     end
   end
