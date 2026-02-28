@@ -3,5 +3,5 @@ Geocoder.configure(
   units: :mi,
 
   # Calculation method for distance (Haversine formula)
-  distances: :linear
+  distances: :spherical
 )
