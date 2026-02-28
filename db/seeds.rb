@@ -619,13 +619,13 @@ Activity.create!([
     indoor: false,
     cost_level: 1,
     hours: {
-      monday: "8:00 AM - 6:00 PM",
-      tuesday: "8:00 AM - 6:00 PM",
-      wednesday: "8:00 AM - 5:00 PM",
-      thursday: "8:00 AM - 6:00 PM",
-      friday: "8:00 AM - 6:00 PM",
-      saturday: "8:00 AM - 6:00 PM",
-      sunday: "8:00 AM - 5:00 PM"
+      monday: "closed",
+      tuesday: "closed",
+      wednesday: "10:00 AM - 1:00 PM",
+      thursday: "10:00 AM - 1:00 PM",
+      friday: "10:00 AM - 1:00 PM",
+      saturday: "10:00 AM - 1:00 PM",
+      sunday: "10:00 AM - 1:00 PM"
     },
     website: "https://www.1870farm.com",
     phone: "(919) 448-8175"
