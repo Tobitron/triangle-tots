@@ -521,6 +521,27 @@ Activity.create!([
     },
     website: "https://www.marbleskidsmuseum.org",
     phone: "(919) 857-4HO"
+  },
+  {
+    name: "Notasium",
+    description: "Music-based indoor play space with 3,000 sq ft of hands-on instruments and sound exploration for kids. All-day pass lets you come and go. Also offers music lessons and classes.",
+    address: "3750 Durham-Chapel Hill Blvd, Durham, NC 27707",
+    latitude: 35.9900,
+    longitude: -78.9800,
+    activity_type: "indoor_play",
+    indoor: true,
+    cost_level: 1,
+    hours: {
+      monday: "9:30 AM - 6:30 PM",
+      tuesday: "9:30 AM - 6:30 PM",
+      wednesday: "9:30 AM - 6:30 PM",
+      thursday: "9:30 AM - 6:30 PM",
+      friday: "9:30 AM - 6:30 PM",
+      saturday: "9:00 AM - 11:00 AM",
+      sunday: "closed"
+    },
+    website: "https://durham.notasium.com",
+    phone: "(919) 230-9321"
   }
 ])
 
@@ -587,6 +608,27 @@ Activity.create!([
     },
     website: "https://www.mapleviewfarm.com",
     phone: "(919) 960-5535"
+  },
+  {
+    name: "1870 Farm",
+    description: "17-acre educational farm with an Animal Village petting zoo featuring goats, sheep, ponies, donkeys, pigs, alpacas, and more. Kids can feed animals, fish, and take electric tractor rides. Advance booking required.",
+    address: "1224 Old Lystra Rd, Chapel Hill, NC 27517",
+    latitude: 35.9100,
+    longitude: -79.1200,
+    activity_type: "farm",
+    indoor: false,
+    cost_level: 1,
+    hours: {
+      monday: "8:00 AM - 6:00 PM",
+      tuesday: "8:00 AM - 6:00 PM",
+      wednesday: "8:00 AM - 5:00 PM",
+      thursday: "8:00 AM - 6:00 PM",
+      friday: "8:00 AM - 6:00 PM",
+      saturday: "8:00 AM - 6:00 PM",
+      sunday: "8:00 AM - 5:00 PM"
+    },
+    website: "https://www.1870farm.com",
+    phone: "(919) 448-8175"
   }
 ])
 
