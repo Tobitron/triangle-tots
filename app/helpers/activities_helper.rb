@@ -40,7 +40,8 @@ module ActivitiesHelper
     case activity.status
     when :open
       content_tag :span, "Open until #{activity.status_time}",
-                  class: "px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded"
+                  class: "px-2 py-1 text-xs font-medium rounded",
+                  style: "background-color: #DFF0D8; color: #3A6B35;"
     when :closing_soon
       content_tag :span, "Closing soon",
                   class: "px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded"

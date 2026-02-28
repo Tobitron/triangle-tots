@@ -23,3 +23,13 @@ production:
     class: SyncEventsJob
     queue: default
     schedule: every thursday at 6am
+
+  sync_triangle_events_friday:
+    class: SyncEventsJob
+    queue: default
+    schedule: every friday at 6am
+
+  sync_triangle_events_saturday:
+    class: SyncEventsJob
+    queue: default
+    schedule: every saturday at 7am
