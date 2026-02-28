@@ -49,11 +49,16 @@ class Activity < ApplicationRecord
     return nil if latitude.blank? || longitude.blank?
     return nil if home_lat.blank? || home_lng.blank?
 
-    ::Geocoder::Calculations.distance_between(
-      [home_lat, home_lng],
-      [latitude, longitude],
-      units: :mi
-    )
+    rad = Math::PI / 180
+    r = 3958.8 # Earth radius in miles
+
+    lat1 = home_lat.to_f * rad
+    lat2 = latitude.to_f * rad
+    dlat = (latitude.to_f - home_lat.to_f) * rad
+    dlng = (longitude.to_f - home_lng.to_f) * rad
+
+    a = Math.sin(dlat / 2)**2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dlng / 2)**2
+    (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) * r).round(1)
   end
 
   # Get current day's hours string
