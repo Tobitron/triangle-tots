@@ -1,4 +1,22 @@
 module ActivitiesHelper
+  ACTIVITY_TYPE_LABELS = {
+    'playground'     => 'Playgrounds',
+    'library'        => 'Libraries',
+    'museum'         => 'Museums',
+    'park'           => 'Parks',
+    'splash_pad'     => 'Splash Pads',
+    'indoor_play'    => 'Indoor Play',
+    'farm'           => 'Farms',
+    'nature_trail'   => 'Nature Trails',
+    'class'          => 'Classes',
+    'event'          => 'Events',
+    'restaurant'     => 'Restaurants'
+  }.freeze
+
+  def activity_type_label(type)
+    ACTIVITY_TYPE_LABELS[type] || type.tr('_', ' ').titleize
+  end
+
   def activity_icon(activity_type, size: 64)
     # Handle nil activity_type
     return image_tag('icon-library.png', width: size, height: size, alt: "Activity icon", class: "activity-icon") if activity_type.nil?

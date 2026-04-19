@@ -4,6 +4,10 @@ class ActivitiesController < ApplicationController
   def index
     @activities = Activity.excluding_thumbs_down_for(Current.user)
 
+    # Filter by activity type if requested
+    @type_filter = params[:type_filter].presence
+    @activities = @activities.where(activity_type: @type_filter) if @type_filter
+
     # Extract home location from query params (or fall back to central Triangle)
     home_lat = params[:home_lat]&.to_f || 36.0014  # Durham
     home_lng = params[:home_lng]&.to_f || -78.9015
