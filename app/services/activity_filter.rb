@@ -39,11 +39,13 @@ class ActivityFilter
       next_sunday = today + 7.days
     end
 
-    # Filter to events only, happening on next Sat or Sun
+    # Filter to events only whose date range overlaps the upcoming weekend
     activities.select do |activity|
-      activity.is_event &&
-      activity.start_date.present? &&
-      (activity.start_date.to_date == next_saturday || activity.start_date.to_date == next_sunday)
+      next false unless activity.is_event && activity.start_date.present?
+
+      event_start = activity.start_date.to_date
+      event_end   = activity.end_date&.to_date || event_start
+      (event_start..event_end).cover?(next_saturday) || (event_start..event_end).cover?(next_sunday)
     end
   end
 

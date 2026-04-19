@@ -30,8 +30,11 @@ class EventImporter
       last_synced_at: Time.current
     )
 
-    # Geocode if address changed
-    if activity.address_changed? && activity.address.present?
+    # Use provided coordinates if available, otherwise geocode from address
+    if event_data[:latitude].present? && event_data[:longitude].present?
+      activity.latitude  = event_data[:latitude]
+      activity.longitude = event_data[:longitude]
+    elsif activity.address_changed? && activity.address.present?
       geocode_activity(activity)
     end
 

@@ -42,6 +42,22 @@ class EventContentParser
   def self.extract_start_date(doc, metadata)
     text = doc.text
 
+    # Check for multi-day range first (e.g. "April 17-19, 2026" or "April 17–19, 2026")
+    range = extract_date_range(text)
+    if range
+      parsed = range[0]
+      time_match = text.match(/from\s+(\d{1,2}):?(\d{2})?\s*(a\.m\.|p\.m\.|am|pm)/i)
+      if time_match
+        hour = time_match[1].to_i
+        minute = time_match[2]&.to_i || 0
+        is_pm = time_match[3].downcase.include?('p')
+        hour = 12 if hour == 12 && !is_pm
+        hour += 12 if is_pm && hour != 12
+        return parsed.in_time_zone.change(hour: hour, min: minute)
+      end
+      return parsed.in_time_zone
+    end
+
     # Try multiple date patterns
     date_patterns = [
       # "Sunday, March 22, 2026, from 12 to 5 p.m."
@@ -92,6 +108,23 @@ class EventContentParser
     text = doc.text
     start_date = extract_start_date(doc, metadata)
     return nil unless start_date
+
+    # Check for multi-day date range (e.g. "April 17-19, 2026")
+    range = extract_date_range(text)
+    if range
+      end_day = range[1]
+      # Try to extract closing time (e.g. "10 a.m. to 8 p.m.")
+      closing_match = text.match(/to\s+(\d{1,2}):?(\d{2})?\s*(a\.m\.|p\.m\.|am|pm)/i)
+      if closing_match
+        hour = closing_match[1].to_i
+        minute = closing_match[2]&.to_i || 0
+        is_pm = closing_match[3].downcase.include?('p')
+        hour = 12 if hour == 12 && !is_pm
+        hour += 12 if is_pm && hour != 12
+        return end_day.in_time_zone.change(hour: hour, min: minute)
+      end
+      return end_day.in_time_zone.end_of_day
+    end
 
     # Look for "from X to Y p.m." pattern
     time_match = text.match(/from\s+\d{1,2}:?(\d{2})?\s*(?:a\.m\.|p\.m\.|am|pm)\s+to\s+(\d{1,2}):?(\d{2})?\s*(a\.m\.|p\.m\.|am|pm)/i)
@@ -171,6 +204,22 @@ class EventContentParser
       end
     end
 
+    nil
+  end
+
+  # Detect multi-day date ranges like "April 17-19, 2026" or "April 17–19, 2026"
+  # Returns [start_date, end_date] as Date objects, or nil
+  def self.extract_date_range(text)
+    match = text.match(/(\w+)\s+(\d{1,2})[-–](\d{1,2}),?\s+(\d{4})/)
+    return nil unless match
+
+    month, start_day, end_day, year = match[1], match[2], match[3], match[4]
+    start_date = Date.parse("#{month} #{start_day}, #{year}")
+    end_date   = Date.parse("#{month} #{end_day}, #{year}")
+    return nil if end_date < start_date
+
+    [start_date, end_date]
+  rescue ArgumentError
     nil
   end
 

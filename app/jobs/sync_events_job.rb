@@ -5,43 +5,70 @@ class SyncEventsJob < ApplicationJob
   retry_on Net::ReadTimeout, Net::OpenTimeout, wait: 5.minutes, attempts: 3
 
   def perform
-    Rails.logger.info("Starting event sync from Triangle on the Cheap")
+    Rails.logger.info("Starting event sync")
 
-    results = {
-      fetched: 0,
-      created: 0,
-      updated: 0,
-      skipped: 0,
-      failed: 0,
-      errors: []
-    }
+    results = { fetched: 0, created: 0, updated: 0, skipped: 0, failed: 0, errors: [] }
 
-    begin
-      # Fetch RSS items
-      items = RssFeedService.fetch_items
-      results[:fetched] = items.count
+    sync_rss(results)
+    sync_triangle_mom(results)
 
-      if items.empty?
-        Rails.logger.warn("No items fetched from RSS feed")
-        return results
-      end
-
-      # Process each item
-      items.each do |item|
-        process_item(item, results)
-      end
-
-      Rails.logger.info("Event sync complete: #{results.slice(:fetched, :created, :updated, :skipped, :failed).inspect}")
-      results
-
-    rescue => e
-      Rails.logger.error("Event sync failed: #{e.message}")
-      Rails.logger.error(e.backtrace.first(5).join("\n"))
-      raise # Re-raise to trigger retry
-    end
+    Rails.logger.info("Event sync complete: #{results.slice(:fetched, :created, :updated, :skipped, :failed).inspect}")
+    results
+  rescue => e
+    Rails.logger.error("Event sync failed: #{e.message}")
+    Rails.logger.error(e.backtrace.first(5).join("\n"))
+    raise
   end
 
   private
+
+  def sync_rss(results)
+    items = RssFeedService.fetch_items
+    Rails.logger.warn("No items fetched from RSS feed") and return if items.empty?
+
+    results[:fetched] += items.count
+    items.each { |item| process_item(item, results) }
+  end
+
+  def sync_triangle_mom(results)
+    items = TriangleMomService.fetch_items
+    Rails.logger.warn("No items fetched from Triangle Mom") and return if items.empty?
+
+    suitable = items.select { |item| TriangleMomAgeFilter.suitable?(item) }
+    Rails.logger.info("Triangle Mom: #{suitable.count}/#{items.count} events suitable for kids 4 and under")
+
+    results[:fetched] += suitable.count
+    suitable.each { |item| process_triangle_mom_item(item, results) }
+  end
+
+  def process_triangle_mom_item(item, results)
+    # Skip past events
+    if item[:start_date] < 1.day.ago
+      results[:skipped] += 1
+      return
+    end
+
+    result = EventImporter.import(item, item[:source_url])
+
+    if result[:success]
+      if result[:created]
+        results[:created] += 1
+        Rails.logger.info("Created Triangle Mom event: #{item[:name]}")
+      else
+        results[:updated] += 1
+        Rails.logger.info("Updated Triangle Mom event: #{item[:name]}")
+      end
+    else
+      results[:failed] += 1
+      error_msg = "#{item[:source_url]}: #{result[:errors].join(", ")}"
+      results[:errors] << error_msg
+      Rails.logger.warn("Failed to import Triangle Mom event: #{error_msg}")
+    end
+  rescue => e
+    results[:failed] += 1
+    results[:errors] << "#{item[:source_url]}: #{e.message}"
+    Rails.logger.error("Error processing Triangle Mom event: #{e.message}")
+  end
 
   def process_item(item, results)
     # Parse content
