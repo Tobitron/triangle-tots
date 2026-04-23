@@ -3,6 +3,7 @@ class SyncEventsJob < ApplicationJob
 
   # Retry on network errors, not on parsing errors
   retry_on Net::ReadTimeout, Net::OpenTimeout, wait: 5.minutes, attempts: 3
+  retry_on Anthropic::Errors::APIConnectionError, Anthropic::Errors::APITimeoutError, wait: 2.minutes, attempts: 3
 
   def perform
     Rails.logger.info("Starting event sync")
@@ -26,16 +27,19 @@ class SyncEventsJob < ApplicationJob
     items = RssFeedService.fetch_items
     Rails.logger.warn("No items fetched from RSS feed") and return if items.empty?
 
-    results[:fetched] += items.count
-    items.each { |item| process_item(item, results) }
+    suitable = RssAgeFilter.filter(items)
+    Rails.logger.info("RSS: #{suitable.count}/#{items.count} events suitable for toddlers")
+
+    results[:fetched] += suitable.count
+    suitable.each { |item| process_item(item, results) }
   end
 
   def sync_triangle_mom(results)
     items = TriangleMomService.fetch_items
     Rails.logger.warn("No items fetched from Triangle Mom") and return if items.empty?
 
-    suitable = items.select { |item| TriangleMomAgeFilter.suitable?(item) }
-    Rails.logger.info("Triangle Mom: #{suitable.count}/#{items.count} events suitable for kids 4 and under")
+    suitable = TriangleMomAgeFilter.filter(items)
+    Rails.logger.info("Triangle Mom: #{suitable.count}/#{items.count} events selected")
 
     results[:fetched] += suitable.count
     suitable.each { |item| process_triangle_mom_item(item, results) }

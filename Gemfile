@@ -50,6 +50,9 @@ gem "geocoder"
 # HTTP client for API calls
 gem "httparty"
 
+# Anthropic API client for Claude web search
+gem "anthropic"
+
 # Natural language date parsing for event scraping
 gem "chronic"
 

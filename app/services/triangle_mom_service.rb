@@ -28,7 +28,8 @@ class TriangleMomService
       return []
     end
 
-    events = response.parsed_response
+    body = response.parsed_response
+    events = body.is_a?(Hash) ? body["events"] : body
     return [] unless events.is_a?(Array)
 
     Rails.logger.info("Triangle Mom: fetched #{events.count} raw events")
