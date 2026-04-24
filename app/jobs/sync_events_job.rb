@@ -12,6 +12,7 @@ class SyncEventsJob < ApplicationJob
 
     sync_rss(results)
     sync_triangle_mom(results)
+    sync_tavily(results)
 
     Rails.logger.info("Event sync complete: #{results.slice(:fetched, :created, :updated, :skipped, :failed).inspect}")
     results
@@ -32,6 +33,43 @@ class SyncEventsJob < ApplicationJob
 
     results[:fetched] += suitable.count
     suitable.each { |item| process_item(item, results) }
+  end
+
+  def sync_tavily(results)
+    items = TavilyEventSearchService.fetch_items
+    Rails.logger.warn("No items fetched from Tavily") and return if items.empty?
+
+    Rails.logger.info("Tavily: #{items.count} events found")
+    results[:fetched] += items.count
+    items.each { |item| process_tavily_item(item, results) }
+  end
+
+  def process_tavily_item(item, results)
+    if item[:start_date] < 1.day.ago
+      results[:skipped] += 1
+      return
+    end
+
+    result = EventImporter.import(item, item[:source_url])
+
+    if result[:success]
+      if result[:created]
+        results[:created] += 1
+        Rails.logger.info("Created Tavily event: #{item[:name]}")
+      else
+        results[:updated] += 1
+        Rails.logger.info("Updated Tavily event: #{item[:name]}")
+      end
+    else
+      results[:failed] += 1
+      error_msg = "#{item[:source_url]}: #{result[:errors].join(", ")}"
+      results[:errors] << error_msg
+      Rails.logger.warn("Failed to import Tavily event: #{error_msg}")
+    end
+  rescue => e
+    results[:failed] += 1
+    results[:errors] << "#{item[:source_url]}: #{e.message}"
+    Rails.logger.error("Error processing Tavily event: #{e.message}")
   end
 
   def sync_triangle_mom(results)
