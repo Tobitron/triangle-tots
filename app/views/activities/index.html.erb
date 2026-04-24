@@ -1,24 +1,24 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="mb-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <div class="mb-6">
     <div class="flex items-start justify-between">
       <div>
-        <h1 class="text-4xl font-bold text-gray-900 mb-2">Triangle Tots</h1>
-        <p class="text-lg text-gray-600">An activities app for everyone! (That lives in Chapel Hill and has a 3-year-old)</p>
+        <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Triangle Tots</h1>
+        <p class="text-sm sm:text-lg text-gray-500 mt-2 mb-2">Stuff for 3-year-olds in the triangle!</p>
       </div>
-      <div class="flex flex-col items-end gap-2 mt-2">
+      <div class="flex flex-col items-end gap-1 text-xs sm:text-sm">
         <% if authenticated? %>
-          <div class="flex items-center gap-3 text-sm">
-            <span class="text-gray-600"><%= Current.user.email_address %></span>
-            <%= button_to "Log out", session_path, method: :delete, class: "text-blue-600 hover:text-blue-800 underline" %>
+          <div class="flex items-center gap-2">
+            <span class="text-gray-500 truncate max-w-[120px] sm:max-w-none"><%= Current.user.email_address %></span>
+            <%= button_to "Log out", session_path, method: :delete, class: "text-blue-600 hover:text-blue-800 underline whitespace-nowrap" %>
           </div>
         <% else %>
-          <div class="flex items-center gap-3 text-sm">
-            <%= link_to "Log in", new_session_path, class: "text-blue-600 hover:text-blue-800 underline" %>
-            <%= link_to "Sign up", new_registration_path, class: "text-blue-600 hover:text-blue-800 underline" %>
+          <div class="flex items-center gap-2">
+            <%= link_to "Log in", new_session_path, class: "text-blue-600 hover:text-blue-800 underline whitespace-nowrap" %>
+            <%= link_to "Sign up", new_registration_path, class: "text-blue-600 hover:text-blue-800 underline whitespace-nowrap" %>
           </div>
         <% end %>
         <% if @home_location %>
-          <a href="#" onclick="LocationManager.clearLocation(); LocationManager.requestGeolocation(); return false;" class="text-sm text-blue-600 hover:text-blue-800 underline whitespace-nowrap">
+          <a href="#" onclick="LocationManager.clearLocation(); LocationManager.requestGeolocation(); return false;" class="text-blue-600 hover:text-blue-800 underline whitespace-nowrap">
             Change Location
           </a>
         <% end %>
@@ -27,8 +27,8 @@
 
     <%# Weather indicator %>
     <% if @current_weather %>
-      <div class="mt-5 flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-100 rounded-full text-sm shadow-sm w-fit">
-        <span class="text-base"><%= weather_icon(@current_weather[:condition]) %></span>
+      <div class="flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-2 bg-blue-50 border border-blue-100 rounded-full text-xs sm:text-sm shadow-sm w-fit">
+        <span><%= weather_icon(@current_weather[:condition]) %></span>
         <% if @current_weather[:temp_f] %>
           <span class="font-semibold text-gray-900"><%= @current_weather[:temp_f] %>&deg;</span>
         <% end %>
@@ -51,7 +51,7 @@
     <% end %>
 
     <%# Tabs %>
-    <div class="mt-6 border-b border-gray-200">
+    <div class="mt-1 border-b border-gray-200">
       <nav class="-mb-px flex space-x-8">
         <%= link_to activities_path(view: "now", home_lat: @home_location[:latitude], home_lng: @home_location[:longitude], type_filter: @type_filter),
                     class: "#{@view_mode == 'now' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'} whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" do %>
