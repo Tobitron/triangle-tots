@@ -732,27 +732,6 @@ Activity.create!([
     website: "https://www.breezefarm.com"
   },
   {
-    name: "Maple View Agricultural Center",
-    description: "Working farm with a popular ice cream shop. Watch cows being milked, see farm animals up close, and get delicious farm-fresh ice cream. A Chapel Hill area tradition.",
-    address: "3501 Dairyland Rd, Hillsborough, NC 27278",
-    latitude: 36.0050,
-    longitude: -79.1020,
-    activity_type: "farm",
-    indoor: false,
-    cost_level: 1,
-    hours: {
-      monday: "11:00 AM - 9:00 PM",
-      tuesday: "11:00 AM - 9:00 PM",
-      wednesday: "11:00 AM - 9:00 PM",
-      thursday: "11:00 AM - 9:00 PM",
-      friday: "11:00 AM - 10:00 PM",
-      saturday: "11:00 AM - 10:00 PM",
-      sunday: "12:00 PM - 9:00 PM"
-    },
-    website: "https://www.mapleviewfarm.com",
-    phone: "(919) 960-5535"
-  },
-  {
     name: "Maple View Farm",
     description: "Working dairy farm with ice cream shop. See cows, calves, and farm animals. Large lawn area for kids to run around.",
     address: "3514 Dairyland Rd, Hillsborough, NC 27278",
