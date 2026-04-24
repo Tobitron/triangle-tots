@@ -11,7 +11,7 @@ Activity.create!([
   {
     name: "Southern Community Park",
     description: "Large park with a great playground, seasonal splash pad, open fields, and easy walking trails. Has a dedicated toddler play area and shade trees.",
-    address: "1000 Barbee Rd, Chapel Hill, NC 27517",
+    address: "1000 Sumac Rd, Chapel Hill, NC 27516",
     latitude: 35.8832,
     longitude: -79.0440,
     activity_type: "playground",
@@ -31,7 +31,7 @@ Activity.create!([
   {
     name: "Cedar Falls Park",
     description: "Nature-themed playground with creek access and wooded trails. Beloved local park with unique climbing structures and a peaceful natural setting.",
-    address: "500 Cedar Falls Rd, Chapel Hill, NC 27516",
+    address: "501 Weaver Dairy Rd, Chapel Hill, NC 27514",
     latitude: 35.9019,
     longitude: -79.0291,
     activity_type: "playground",
@@ -70,7 +70,7 @@ Activity.create!([
   {
     name: "Homestead Park Playground",
     description: "Known as \"Dinosaur Park\" for its iconic purple dinosaur slide. Dedicated toddler play area plus a full-size structure, rubber surface, and shaded picnic tables. A Chapel Hill playgroup staple. Note: restrooms closed October–May.",
-    address: "200 Homestead Rd, Chapel Hill, NC 27516",
+    address: "100 Northern Park Dr, Chapel Hill, NC 27516",
     latitude: 35.9132,
     longitude: -79.0558,
     activity_type: "playground",
@@ -90,7 +90,7 @@ Activity.create!([
   {
     name: "Wilson Park",
     description: "Carrboro family favorite with new play equipment, a sandbox with diggers, climbing dome, swings, and slides. Baseball field, tennis courts, and Bolin Creek Greenway access nearby.",
-    address: "110 Williams St, Carrboro, NC 27510",
+    address: "101 Williams St, Carrboro, NC 27510",
     latitude: 35.9198,
     longitude: -79.0755,
     activity_type: "playground",
@@ -154,7 +154,7 @@ Activity.create!([
   {
     name: "Homestead Aquatics Center",
     description: "Indoor and outdoor pools with a dedicated toddler wading pool and water play area. Swim lessons available for infants and toddlers. Zero-entry pool makes it easy for little ones.",
-    address: "200 Homestead Rd, Chapel Hill, NC 27516",
+    address: "300 Northern Park Dr, Chapel Hill, NC 27516",
     latitude: 35.9132,
     longitude: -79.0558,
     activity_type: "indoor_play",
@@ -333,7 +333,7 @@ Activity.create!([
   {
     name: "Kidzu Children's Museum",
     description: "Hands-on children's museum designed for kids 0-10. Interactive exhibits, pretend play areas, and toddler-friendly activities.",
-    address: "105 E Franklin St, Chapel Hill, NC 27514",
+    address: "201 S Estes Dr, Chapel Hill, NC 27514",
     latitude: 35.9132,
     longitude: -79.0558,
     activity_type: "museum",
@@ -378,7 +378,7 @@ Activity.create!([
   {
     name: "Coker Arboretum",
     description: "Free 5-acre garden on the UNC campus with winding paths perfect for strollers and little explorers. Beautiful year-round, great for a short outdoor outing.",
-    address: "120 Old Mason Farm Rd, Chapel Hill, NC 27514",
+    address: "399 E Cameron Ave, Chapel Hill, NC 27514",
     latitude: 35.9115,
     longitude: -79.0512,
     activity_type: "park",
@@ -418,7 +418,7 @@ Activity.create!([
   {
     name: "Duke Gardens",
     description: "Beautiful botanical gardens with wide paved paths perfect for strollers. Doris Duke Center has interactive exhibits for kids.",
-    address: "420 Anderson St, Durham, NC 27708",
+    address: "420 Anderson St, Durham, NC 27705",
     latitude: 36.0041,
     longitude: -78.9382,
     activity_type: "park",
@@ -454,6 +454,170 @@ Activity.create!([
       sunday: "dawn - dusk"
     },
     website: "https://www.raleighnc.gov/parks/lake-johnson"
+  }
+])
+
+# Hikes & Nature Walks
+Activity.create!([
+  {
+    name: "Bolin Creek Trail",
+    description: "Paved greenway trail following Bolin Creek from Chapel Hill to Carrboro. Flat, stroller-friendly, and shaded. Kids love spotting turtles and crawfish in the creek. Multiple access points make it easy to do a short out-and-back.",
+    address: "200 N Greensboro St, Carrboro, NC 27510",
+    latitude: 35.9220,
+    longitude: -79.0754,
+    activity_type: "nature_trail",
+    indoor: false,
+    cost_level: 0,
+    hours: {
+      monday: "dawn - dusk",
+      tuesday: "dawn - dusk",
+      wednesday: "dawn - dusk",
+      thursday: "dawn - dusk",
+      friday: "dawn - dusk",
+      saturday: "dawn - dusk",
+      sunday: "dawn - dusk"
+    },
+    website: "https://www.townofchapelhill.org/government/departments-services/parks-recreation"
+  },
+  {
+    name: "Johnston Mill Nature Preserve",
+    description: "Quiet 296-acre preserve with easy wooded trails and a creek crossing. Short loop options (under 1 mile) make it great for toddler-paced walks. Watch for deer, birds, and wildflowers. No restrooms — come prepared.",
+    address: "2713 Mt Sinai Rd, Chapel Hill, NC 27514",
+    latitude: 35.9410,
+    longitude: -79.0120,
+    activity_type: "nature_trail",
+    indoor: false,
+    cost_level: 0,
+    hours: {
+      monday: "dawn - dusk",
+      tuesday: "dawn - dusk",
+      wednesday: "dawn - dusk",
+      thursday: "dawn - dusk",
+      friday: "dawn - dusk",
+      saturday: "dawn - dusk",
+      sunday: "dawn - dusk"
+    },
+    website: "https://www.triangleland.org/explore/nature-preserves/johnston-mill"
+  },
+  {
+    name: "Carolina North Forest",
+    description: "700-acre UNC research forest with wide gravel fire roads perfect for toddlers and strollers. Gentle terrain, creeks to peek at, and lots of birds. The Bolin Creek entrance is the easiest access point.",
+    address: "1089 Municipal Dr, Chapel Hill, NC 27599",
+    latitude: 35.9350,
+    longitude: -79.0440,
+    activity_type: "nature_trail",
+    indoor: false,
+    cost_level: 0,
+    hours: {
+      monday: "dawn - dusk",
+      tuesday: "dawn - dusk",
+      wednesday: "dawn - dusk",
+      thursday: "dawn - dusk",
+      friday: "dawn - dusk",
+      saturday: "dawn - dusk",
+      sunday: "dawn - dusk"
+    },
+    website: "https://facilities.unc.edu/operations/carolina-north-forest/"
+  },
+  {
+    name: "Leigh Farm Park",
+    description: "Historic 127-acre park with wide, flat trails through meadows and woods. The 1-mile paved loop is stroller-friendly and the open fields are great for toddlers to run. Benches and a picnic shelter along the trail.",
+    address: "370 Leigh Farm Rd, Durham, NC 27707",
+    latitude: 35.9580,
+    longitude: -78.9610,
+    activity_type: "nature_trail",
+    indoor: false,
+    cost_level: 0,
+    hours: {
+      monday: "dawn - dusk",
+      tuesday: "dawn - dusk",
+      wednesday: "dawn - dusk",
+      thursday: "dawn - dusk",
+      friday: "dawn - dusk",
+      saturday: "dawn - dusk",
+      sunday: "dawn - dusk"
+    },
+    website: "https://www.dprplaymore.org/facilities/leigh-farm-park"
+  },
+  {
+    name: "Occoneechee Mountain State Natural Area",
+    description: "Short hikes with big views. The Overlook Trail (~0.6 miles) leads to a bluff overlooking the Eno River — toddlers can handle it with a carrier backup. Brown Elfin Knob trail has unique rock outcrops. Hillsborough's hidden gem.",
+    address: "625 Virginia Cates Rd, Hillsborough, NC 27278",
+    latitude: 36.0630,
+    longitude: -79.1150,
+    activity_type: "nature_trail",
+    indoor: false,
+    cost_level: 0,
+    hours: {
+      monday: "8:00 AM - 6:00 PM",
+      tuesday: "8:00 AM - 6:00 PM",
+      wednesday: "8:00 AM - 6:00 PM",
+      thursday: "8:00 AM - 6:00 PM",
+      friday: "8:00 AM - 6:00 PM",
+      saturday: "8:00 AM - 6:00 PM",
+      sunday: "8:00 AM - 6:00 PM"
+    },
+    website: "https://www.ncparks.gov/state-natural-areas/occoneechee-mountain-state-natural-area"
+  },
+  {
+    name: "Little River Regional Park",
+    description: "Peaceful 391-acre park on the Orange-Durham county line. Wide, well-maintained trails through forest with creek crossings on bridges. The 1.3-mile Little River Loop is flat and easy for little legs. Playground at the trailhead too.",
+    address: "301 Little River Park Way, Rougemont, NC 27572",
+    latitude: 36.1510,
+    longitude: -79.0870,
+    activity_type: "nature_trail",
+    indoor: false,
+    cost_level: 0,
+    hours: {
+      monday: "8:00 AM - sunset",
+      tuesday: "8:00 AM - sunset",
+      wednesday: "8:00 AM - sunset",
+      thursday: "8:00 AM - sunset",
+      friday: "8:00 AM - sunset",
+      saturday: "8:00 AM - sunset",
+      sunday: "8:00 AM - sunset"
+    },
+    website: "https://www.eno.org/little-river-park/"
+  },
+  {
+    name: "Brumley Forest Nature Preserve",
+    description: "164-acre preserve with easy 2-mile loop trail through hardwood forest. Flat, wide trail is good for confident walkers. Quiet and uncrowded — a nice escape. No restrooms or water, so bring supplies.",
+    address: "3620 Old NC 10, Durham, NC 27705",
+    latitude: 36.0280,
+    longitude: -79.0130,
+    activity_type: "nature_trail",
+    indoor: false,
+    cost_level: 0,
+    hours: {
+      monday: "dawn - dusk",
+      tuesday: "dawn - dusk",
+      wednesday: "dawn - dusk",
+      thursday: "dawn - dusk",
+      friday: "dawn - dusk",
+      saturday: "dawn - dusk",
+      sunday: "dawn - dusk"
+    },
+    website: "https://www.triangleland.org/explore/nature-preserves/brumley-forest"
+  },
+  {
+    name: "Fred G. Bond Metro Park",
+    description: "310-acre park in Cary with paved lakeside trails, a boathouse, and a large playground. The 2-mile Lake Trail is flat, paved, and stroller-perfect with water views the whole way. Boat rentals available seasonally.",
+    address: "801 High House Rd, Cary, NC 27513",
+    latitude: 35.8080,
+    longitude: -78.8120,
+    activity_type: "nature_trail",
+    indoor: false,
+    cost_level: 0,
+    hours: {
+      monday: "dawn - dusk",
+      tuesday: "dawn - dusk",
+      wednesday: "dawn - dusk",
+      thursday: "dawn - dusk",
+      friday: "dawn - dusk",
+      saturday: "dawn - dusk",
+      sunday: "dawn - dusk"
+    },
+    website: "https://www.townofcary.org/recreation-enjoyment/parks-greenways-environment/parks/fred-g-bond-metro-park"
   }
 ])
 
@@ -570,7 +734,7 @@ Activity.create!([
   {
     name: "Maple View Agricultural Center",
     description: "Working farm with a popular ice cream shop. Watch cows being milked, see farm animals up close, and get delicious farm-fresh ice cream. A Chapel Hill area tradition.",
-    address: "3501 Dairyland Rd, Chapel Hill, NC 27516",
+    address: "3501 Dairyland Rd, Hillsborough, NC 27278",
     latitude: 36.0050,
     longitude: -79.1020,
     activity_type: "farm",
