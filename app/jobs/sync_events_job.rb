@@ -8,6 +8,7 @@ class SyncEventsJob < ApplicationJob
   def perform
     Rails.logger.info("Starting event sync")
 
+    sync_start = Time.current
     results = { fetched: 0, created: 0, updated: 0, skipped: 0, failed: 0, errors: [] }
 
     sync_rss(results)
@@ -15,6 +16,9 @@ class SyncEventsJob < ApplicationJob
     sync_tavily(results)
 
     Rails.logger.info("Event sync complete: #{results.slice(:fetched, :created, :updated, :skipped, :failed).inspect}")
+
+    quality_filter_synced_events(sync_start)
+
     results
   rescue => e
     Rails.logger.error("Event sync failed: #{e.message}")
@@ -23,6 +27,15 @@ class SyncEventsJob < ApplicationJob
   end
 
   private
+
+  def quality_filter_synced_events(since)
+    activities = Activity.where(is_event: true, last_synced_at: since..)
+                         .where("start_date > ?", 1.day.ago)
+    return if activities.empty?
+
+    Rails.logger.info("EventQualityFilter: checking #{activities.count} synced events")
+    EventQualityFilter.filter(activities)
+  end
 
   def sync_rss(results)
     items = RssFeedService.fetch_items
