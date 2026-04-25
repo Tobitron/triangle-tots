@@ -4,7 +4,7 @@ class WeatherService
 
   CACHE_DURATION = 30.minutes
   RAIN_PROBABILITY_THRESHOLD = 60  # Percentage
-  SIGNIFICANT_RAIN_HOURS_THRESHOLD = 3  # Hours
+  SIGNIFICANT_RAIN_HOURS_THRESHOLD = 0  # Hours
 
   # Fetch weather forecast for a location
   # Returns: { current: {...}, forecast: [...], strategy: :hide_outdoor/:deprioritize_outdoor/:normal }
@@ -99,7 +99,7 @@ class WeatherService
     current_hour = Time.current.hour
     forecast_data["hour"].select do |hour|
       hour_time = Time.parse(hour["time"])
-      hour_time > Time.current && hour_time < 8.hours.from_now
+      hour_time > Time.current && hour_time < 90.minutes.from_now
     end.map do |hour|
       {
         time: Time.parse(hour["time"]),
