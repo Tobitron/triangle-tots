@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_01_235102) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_25_120000) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "pg_catalog.plpgsql"
 
   create_table "activities", force: :cascade do |t|
     t.string "activity_type", null: false
@@ -75,5 +75,4 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_235102) do
   add_foreign_key "sessions", "users"
   add_foreign_key "user_interactions", "activities"
   add_foreign_key "user_interactions", "users"
-
 end
