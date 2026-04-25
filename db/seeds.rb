@@ -154,9 +154,9 @@ Activity.create!([
   {
     name: "Homestead Aquatics Center",
     description: "Indoor and outdoor pools with a dedicated toddler wading pool and water play area. Swim lessons available for infants and toddlers. Zero-entry pool makes it easy for little ones.",
-    address: "300 Northern Park Dr, Chapel Hill, NC 27516",
-    latitude: 35.9132,
-    longitude: -79.0558,
+    address: "300 Aquatic Dr, Chapel Hill, NC 27516",
+    latitude: 35.9559,
+    longitude: -79.0640,
     activity_type: "indoor_play",
     indoor: true,
     cost_level: 1,
