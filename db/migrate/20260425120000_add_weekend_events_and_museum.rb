@@ -29,7 +29,7 @@ class AddWeekendEventsAndMuseum < ActiveRecord::Migration[8.1]
         address: "573 Dewitt Smith Rd, Pittsboro, NC 27312",
         cost_level: 1,
         description: "Late April marks the start of strawberry season at Chatham Oaks Farm — a seasonal window that lasts only a few weeks. Kids can pick their own strawberries right from the field. The farm is also participating in the Piedmont Farm Tour this weekend, with food trucks on-site both days. Call ahead to confirm berry availability before visiting: 919-533-7621. Weekend hours 1–6 PM.",
-        start_date: Time.zone.parse("2026-04-25 13:00:00"),
+        start_date: Time.zone.parse("2026-04-26 13:00:00"),
         end_date: Time.zone.parse("2026-04-26 18:00:00"),
         indoor: false,
         is_event: true,
